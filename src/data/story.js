@@ -148,6 +148,31 @@ export const PIZZA = {
     grated: 'جبنة مبشورة',
     basil: 'ريحان طازج',
   },
+  // ── The film ─────────────────────────────────────────────────────
+  // A real-looking video of the pizza being made, scrubbed by the scroll.
+  // Made from the clips in /film with `npm run film` (see README); without
+  // it, the 3D version above plays.
+  //   clips  `at` = [from, to] in screens of this scene, per clip id
+  //   tags   where each ingredient label points, as a fraction of the video
+  //          frame (x from the left, y from the top), and when it shows
+  film: {
+    clips: [
+      { id: 'dough', at: [0.05, 1.2] },
+      { id: 'stretch', at: [1.2, 2.2] },
+      { id: 'sauce', at: [2.2, 4.2] },
+      { id: 'cheese', at: [4.2, 6.0] },
+      { id: 'oven', at: [6.0, 6.8] },
+      { id: 'bake', at: [6.8, 8.6] },
+      { id: 'finish', at: [8.6, 9.95] },
+    ],
+    tags: {
+      flour: { at: [0.5, 1.3], x: 0.5, y: 0.62 },
+      sauce: { at: [2.6, 3.3], x: 0.5, y: 0.55 },
+      cheese: { at: [4.5, 5.2], x: 0.5, y: 0.55 },
+      grated: { at: [8.85, 9.35], x: 0.56, y: 0.42 },
+      basil: { at: [9.3, 9.8], x: 0.4, y: 0.55 },
+    },
+  },
 };
 
 /* ─────────────────── Scene 6 — أول تجربة (3D) ─────────────────── */

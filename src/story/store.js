@@ -17,6 +17,7 @@ const state = {
   worldArmed: false, // mount the 3D world (lazy chunk)
   worldVisible: false, // the 3D canvas is on screen → render it
   worldFailed: false, // the 3D could not run → scenes show photos instead
+  worldCovered: false, // a full-screen film hides the 3D → pause its rendering
   started: false, // the viewer has started scrolling
   ready: false, // master timeline is built
 };

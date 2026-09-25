@@ -42,7 +42,7 @@ function Warmup() {
  * The canvas only renders while its scenes are on screen.
  */
 export default function World() {
-  const visible = useStory((s) => s.worldVisible);
+  const visible = useStory((s) => s.worldVisible && !s.worldCovered);
   const [dpr, setDpr] = useState(QUALITY.dpr[1]);
   const start = SHOTS.buildStart;
 

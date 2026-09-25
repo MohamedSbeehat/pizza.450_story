@@ -1,12 +1,14 @@
-import { useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { PIZZA } from '../../../data/story';
+import { PIZZA_FILM } from '../../../data/film';
 import { QUALITY } from '../../../config/quality';
 import { useSceneTimeline } from '../../../story/context';
-import { useStory } from '../../../story/store';
+import { story, useStory } from '../../../story/store';
 import { textIn, textOut, fadeIn, fadeOut, shot, worldTo } from '../../../story/helpers';
 import { registerAnchor } from '../../../three/anchors';
 import { StoryText } from '../../StoryText/StoryText';
 import { Media } from '../../Media/Media';
+import { ScrollFilm } from '../../ScrollFilm/ScrollFilm';
 import { StepList, stepTween } from '../common/StepList';
 import '../common/WorldScenes.css';
 import './PizzaScene.css';
@@ -27,6 +29,10 @@ const S = (screens) => screens / PIZZA.duration;
  *            and it is the real Pizzeria 450 pizza
  *
  * Each ingredient gets a small label pinned to it in 3D while it is used.
+ *
+ * When the film exists (`npm run film`, see PIZZA.film), a real-looking video
+ * of the same steps plays over the 3D, scrubbed by the scroll, and the 3D
+ * rests underneath. The 3D takes over again if the video cannot play.
  */
 export function PizzaScene() {
   const noWorld = useStory((st) => !QUALITY.webgl || st.worldFailed);
@@ -37,6 +43,39 @@ export function PizzaScene() {
   const items = useRef([]);
   const fills = useRef([]);
   const tags = useRef({});
+  const film = useRef(null);
+  const filmWrap = useRef(null);
+  const [filmFailed, setFilmFailed] = useState(false);
+  const [filmReady, setFilmReady] = useState(false);
+  const filmOn = !!PIZZA_FILM && !filmFailed;
+  const onFilmFailed = useCallback(() => setFilmFailed(true), []);
+  const onFilmReady = useCallback(() => setFilmReady(true), []);
+  const tagEls = useRef({});
+
+  // Film on screen → pause the 3D underneath; keep the labels on the film.
+  useEffect(() => {
+    if (!filmOn) return undefined;
+    const mk = () => story.film?.marks.pizza;
+    const onFrame = (t) => {
+      const m = mk();
+      if (!m) return;
+      const local = ((t - m.start) / (m.end - m.start)) * PIZZA.duration; // screens
+      story.set({ worldCovered: filmReady && local > 0.35 && local < 9.7 });
+      if (local < 0 || local > PIZZA.duration) return;
+      const r = film.current?.frameRect();
+      if (!r) return;
+      for (const [id, cfg] of Object.entries(PIZZA.film.tags)) {
+        const el = tagEls.current[id];
+        if (el) el.style.transform = `translate3d(${(r.x + cfg.x * r.w).toFixed(1)}px,${(r.y + cfg.y * r.h).toFixed(1)}px,0)`;
+      }
+    };
+    story.onFrame.add(onFrame);
+    onFrame(story.time);
+    return () => {
+      story.onFrame.delete(onFrame);
+      story.set({ worldCovered: false });
+    };
+  }, [filmOn, filmReady]);
 
   useSceneTimeline((tl) => {
     fadeIn(tl, root.current, 0, 0.02);
@@ -65,8 +104,10 @@ export function PizzaScene() {
     worldTo(tl, { fire: 1 }, S(6.5), S(0.5), 'power2.in');
     shot(tl, 'ovenMouth', S(6.9), S(0.45), 'power2.inOut');
     worldTo(tl, { bake: 1 }, S(7.1), S(1.1), 'none');
-    tl.fromTo(heat.current, { autoAlpha: 0 }, { autoAlpha: 1, duration: S(0.4) }, S(7.1));
-    tl.to(heat.current, { autoAlpha: 0, duration: S(0.4) }, S(8.0));
+    if (!PIZZA_FILM) {
+      tl.fromTo(heat.current, { autoAlpha: 0 }, { autoAlpha: 1, duration: S(0.4) }, S(7.1));
+      tl.to(heat.current, { autoAlpha: 0, duration: S(0.4) }, S(8.0));
+    }
 
     // ── …out, and the finishing touch ────────────────────────────
     worldTo(tl, { fire: 0.55 }, S(8.2), S(0.4));
@@ -92,36 +133,70 @@ export function PizzaScene() {
     fadeIn(tl, steps.current, S(0.2), S(0.3));
     fadeOut(tl, steps.current, S(9.8), S(0.2));
 
-    // ── Ingredient labels (pinned to the 3D objects) ─────────────
+    // ── The film: each clip is scrubbed over its part of the scene ─
+    if (PIZZA_FILM) {
+      const head = { v: 0 };
+      PIZZA.film.clips.forEach(({ id, at: [a, b] }, i) => {
+        const c = PIZZA_FILM.clips[id];
+        if (!c) return;
+        tl.fromTo(
+          head,
+          { v: c.from },
+          { v: c.to - 1 / PIZZA_FILM.fps, duration: S(b - a), ease: 'none', immediateRender: i === 0, onUpdate: () => film.current?.seek(head.v) },
+          S(a),
+        );
+      });
+      fadeIn(tl, filmWrap.current, 0, S(0.3));
+      fadeOut(tl, filmWrap.current, S(9.7), S(0.25));
+    }
+
+    // ── Ingredient labels (pinned to the ingredients) ────────────
     const tag = (id, a, b) => {
       const el = tags.current[id];
       if (!el) return;
       tl.fromTo(el, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: S(0.2), ease: 'power2.out' }, S(a));
       tl.to(el, { autoAlpha: 0, y: -8, duration: S(0.2) }, S(b));
     };
-    tag('flour', 0.35, 1.2);
-    tag('sauce', 2.1, 2.75);
-    tag('cheese', 4.4, 5.0);
-    tag('grated', 8.8, 9.25);
-    tag('basil', 9.2, 9.55);
+    if (PIZZA_FILM) {
+      for (const [id, { at }] of Object.entries(PIZZA.film.tags)) tag(id, at[0], at[1]);
+    } else {
+      tag('flour', 0.35, 1.2);
+      tag('sauce', 2.1, 2.75);
+      tag('cheese', 4.4, 5.0);
+      tag('grated', 8.8, 9.25);
+      tag('basil', 9.2, 9.55);
+    }
 
     tl.to(root.current, { autoAlpha: 0, duration: 0.01 }, 0.99);
   });
 
   return (
-    <section ref={root} className="scene world-scene pizza" aria-label="البيتزا">
+    <section ref={root} className={`scene world-scene pizza${filmOn ? ' has-film' : ''}`} aria-label="البيتزا">
       {noWorld ? (
         <div className="world-fallback">
           <Media image={{ src: '/images/story/pizza', position: '43% 55%' }} />
         </div>
       ) : null}
+      {PIZZA_FILM ? (
+        <div ref={filmWrap} className={`pizza__film${filmOn ? '' : ' is-off'}`}>
+          <ScrollFilm ref={film} film={PIZZA_FILM} onFailed={onFilmFailed} onReady={onFilmReady} />
+        </div>
+      ) : null}
       <div ref={heat} className="pizza__heat" aria-hidden="true" />
 
-      {/* labels pinned to the ingredients (moved every frame by the 3D world) */}
-      {noWorld
+      {/* labels pinned to the ingredients (moved every frame by the film or the 3D world) */}
+      {noWorld && !filmOn
         ? null
         : Object.entries(PIZZA.tags).map(([id, label]) => (
-            <div key={id} className="ingredient-tag" ref={(el) => registerAnchor(id, el)} aria-hidden="true">
+            <div
+              key={id}
+              className="ingredient-tag"
+              ref={(el) => {
+                tagEls.current[id] = el;
+                registerAnchor(id, filmOn ? null : el);
+              }}
+              aria-hidden="true"
+            >
               <div className="ingredient-tag__inner" ref={(el) => (tags.current[id] = el)}>
                 <i className="ingredient-tag__dot" />
                 <i className="ingredient-tag__line" />
