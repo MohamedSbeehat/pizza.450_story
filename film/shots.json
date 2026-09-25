@@ -1,6 +1,6 @@
 {
   "space": "zerogpu-aoti/wan2-2-fp8da-aoti-faster",
-  "negative": "blurry, low quality, distorted hands, extra fingers, fused fingers, deformed, text, watermark, subtitles, cartoon, static, oversaturated, jpeg artifacts",
+  "negative": "cartoon, CGI, 3D render, plastic look, deformed hands, extra fingers, fused fingers, warped or melting objects, text, watermark, logo, subtitles, oversaturated colors, blur, flicker, jump cuts, fast shaky camera",
   "shots": [
     {
       "id": "dough",
@@ -13,7 +13,7 @@
       "start": "keys/stretch.jpg",
       "seconds": 5,
       "seed": 451,
-      "prompt": "Close-up food commercial shot. The pizzaiolo's fingertips press and stretch the round pizza dough on the floured white marble counter, working around the edge to form a puffy raised rim, the dough becoming thinner and wider. Flour dust in the warm light, the fire of the wood-fired oven flickers in the background. Slow camera push-in. Realistic, natural hand motion, cinematic."
+      "prompt": "High-angle close-up. The hands stretch the dough outward on the floured marble, turning it a little with each move, forming a thin round base with a soft, puffy rim. The dough is supple and slightly translucent in the light. Slow, smooth orbit around the dough. Setting: a warm artisan pizzeria kitchen — white marble counter dusted with flour, white painted brick wall, light oak shelves, brass cone pendant lamps, and a copper-domed wood-fired oven glowing softly in the background. Style: photorealistic cinematic food commercial, shot on ARRI Alexa with a 50mm macro lens, shallow depth of field, creamy bokeh, warm golden practical light, natural colors, real-world physics, subtle film grain, 24fps. One continuous shot, no cuts, no text, no music."
     },
     {
       "id": "sauce",
@@ -21,7 +21,7 @@
       "start": "keys/sauce.jpg",
       "seconds": 5,
       "seed": 455,
-      "prompt": "The steel ladle pours thick red tomato sauce onto the center of the bare pizza dough, then the back of the ladle spreads the sauce outward in a slow spiral, covering the dough and leaving the puffy rim clean. Close-up food commercial shot, realistic, smooth natural motion, warm light."
+      "prompt": "Top-down close-up. A stainless steel ladle pours thick, glossy red tomato sauce onto the center of the bare dough, then the back of the ladle spreads it outward in a slow, steady spiral, leaving the rim clean. Tiny bits of tomato catch the light. Slow push-in. Setting: a warm artisan pizzeria kitchen — white marble counter dusted with flour, white painted brick wall, light oak shelves, brass cone pendant lamps, and a copper-domed wood-fired oven glowing softly in the background. Style: photorealistic cinematic food commercial, shot on ARRI Alexa with a 50mm macro lens, shallow depth of field, creamy bokeh, warm golden practical light, natural colors, real-world physics, subtle film grain, 24fps. One continuous shot, no cuts, no text, no music."
     },
     {
       "id": "cheese",
@@ -29,7 +29,7 @@
       "startFromLastFrameOf": "03-sauce.mp4",
       "seconds": 5,
       "seed": 456,
-      "prompt": "Hands tear pieces of fresh white mozzarella and place them one by one onto the red tomato sauce on the pizza dough. Close-up food commercial shot, realistic, natural hand motion, soft warm light."
+      "prompt": "Close-up, slow motion. Hands tear fresh white mozzarella into soft pieces — milky strands stretch as it tears — and place them one by one onto the red sauce. The cheese is moist and glistening. Slow push-in. Setting: a warm artisan pizzeria kitchen — white marble counter dusted with flour, white painted brick wall, light oak shelves, brass cone pendant lamps, and a copper-domed wood-fired oven glowing softly in the background. Style: photorealistic cinematic food commercial, shot on ARRI Alexa with a 50mm macro lens, shallow depth of field, creamy bokeh, warm golden practical light, natural colors, real-world physics, subtle film grain, 24fps. One continuous shot, no cuts, no text, no music."
     },
     {
       "id": "oven",
@@ -37,7 +37,7 @@
       "start": "keys/oven.jpg",
       "seconds": 3,
       "seed": 452,
-      "prompt": "The camera slowly pushes in toward the glowing mouth of the copper-domed wood-fired pizza oven. Flames flicker and dance inside the oven, warm firelight shimmers on the hammered copper dome. Cinematic, realistic, steady smooth camera."
+      "prompt": "The camera slowly pushes toward the glowing mouth of the copper-domed wood-fired oven. Flames lick the inside of the dome, orange firelight flickers across the hammered copper surface, a few embers float upward. Steady, smooth camera. Setting: a warm artisan pizzeria kitchen — white marble counter dusted with flour, white painted brick wall, light oak shelves, brass cone pendant lamps, and a copper-domed wood-fired oven glowing softly in the background. Style: photorealistic cinematic food commercial, shot on ARRI Alexa with a 50mm macro lens, shallow depth of field, creamy bokeh, warm golden practical light, natural colors, real-world physics, subtle film grain, 24fps. One continuous shot, no cuts, no text, no music."
     },
     {
       "id": "bake",
@@ -45,7 +45,7 @@
       "start": "keys/bake.jpg",
       "seconds": 5,
       "seed": 453,
-      "prompt": "Inside a wood-fired pizza oven, close-up: the pizza bakes, the crust puffs up and turns golden brown with dark charred leopard spots, the mozzarella melts, spreads and bubbles, flames roll across the dome, glowing embers. Realistic, cinematic food commercial."
+      "prompt": "Inside the wood-fired oven at pizza level, locked-off macro shot with a time-lapse feel: the crust rises and blisters, turning golden with dark leopard spots; the mozzarella melts, bubbles and flows into the sauce; flames roll across the dome above. Setting: a warm artisan pizzeria kitchen — white marble counter dusted with flour, white painted brick wall, light oak shelves, brass cone pendant lamps, and a copper-domed wood-fired oven glowing softly in the background. Style: photorealistic cinematic food commercial, shot on ARRI Alexa with a 50mm macro lens, shallow depth of field, creamy bokeh, warm golden practical light, natural colors, real-world physics, subtle film grain, 24fps. One continuous shot, no cuts, no text, no music."
     },
     {
       "id": "finish",
@@ -53,7 +53,7 @@
       "start": "keys/finish.jpg",
       "seconds": 4,
       "seed": 454,
-      "prompt": "Slow cinematic push-in on a freshly baked Neapolitan margherita pizza in a cardboard box, gentle steam rising from the hot melted mozzarella, the cheese glistens, fresh basil leaves, warm golden sunlight, shallow depth of field, photorealistic."
+      "prompt": "Hero shot. Very slow push-in on the freshly baked margherita: gentle steam rises from the melted mozzarella, the cheese and a touch of olive oil glisten, the charred rim shows its texture, fresh basil leaves rest on top. Warm golden sunlight, shallow depth of field. Setting: a warm artisan pizzeria kitchen — white marble counter dusted with flour, white painted brick wall, light oak shelves, brass cone pendant lamps, and a copper-domed wood-fired oven glowing softly in the background. Style: photorealistic cinematic food commercial, shot on ARRI Alexa with a 50mm macro lens, shallow depth of field, creamy bokeh, warm golden practical light, natural colors, real-world physics, subtle film grain, 24fps. One continuous shot, no cuts, no text, no music."
     }
   ]
 }
