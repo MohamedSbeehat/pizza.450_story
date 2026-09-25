@@ -1,0 +1,204 @@
+.growth {
+  background: radial-gradient(ellipse 90% 70% at 50% 45%, #231710 0%, #0d0a07 60%, #070504 100%);
+}
+
+.growth__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 40% 45% at 50% 46%, rgba(232, 137, 43, 0.14), transparent 70%);
+}
+
+.growth__kicker {
+  position: absolute;
+  z-index: 5;
+  top: calc(var(--bar) + 4.5vh);
+  inset-inline-start: var(--gutter);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.growth__track {
+  position: absolute;
+  inset: 0;
+  perspective: 1400px;
+  perspective-origin: 50% 45%;
+  transform-style: preserve-3d;
+}
+
+.gframe {
+  --w: min(24vw, 46vh);
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: var(--w);
+  margin: calc(var(--w) * -0.62) 0 0 calc(var(--w) * -0.5);
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+.gframe__photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  box-shadow:
+    0 40px 90px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(210, 168, 99, 0.18);
+}
+.gframe__photo .media {
+  position: absolute;
+  inset: 0;
+}
+/* Two photos sharing one frame (the first one on the right, RTL). */
+.gframe__photo.is-pair .media {
+  width: calc(50% - 1px);
+}
+.gframe__photo.is-pair .media:first-child {
+  inset-inline-end: auto;
+}
+.gframe__photo.is-pair .media:nth-child(2) {
+  inset-inline-start: auto;
+}
+.gframe__photo.is-pair::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: linear-gradient(180deg, transparent, rgba(210, 168, 99, 0.7) 18%, rgba(210, 168, 99, 0.7) 82%, transparent);
+}
+.gframe__shade {
+  z-index: 2;
+  position: absolute;
+  inset: 0;
+  background: #0b0907;
+  opacity: 0;
+}
+.gframe__caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-top: 0.9rem;
+}
+.gframe__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+.gframe__story {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.25vw, 1.3rem);
+  line-height: 1.6;
+  color: var(--cream-2);
+}
+.gframe__no {
+  color: var(--amber);
+  font-size: 1.05rem;
+}
+.gframe__label {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.2vw, 2.3rem);
+  color: var(--cream);
+}
+
+/* ── Timeline rail ─────────────────────────────── */
+.growth__rail {
+  position: absolute;
+  z-index: 5;
+  left: calc(var(--gutter) + 2vw);
+  right: calc(var(--gutter) + 2vw);
+  bottom: calc(var(--bar) + 8vh);
+  opacity: 0;
+  visibility: hidden;
+}
+.growth__line {
+  position: relative;
+  height: 1px;
+  background: rgba(241, 230, 208, 0.16);
+}
+.growth__fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: linear-gradient(270deg, var(--amber), var(--orange));
+  transform: scaleX(0);
+  transform-origin: right;
+}
+.growth__dots {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.growth__dots li {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transform: translateX(50%);
+  color: var(--cream-3);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  transition: color 0.4s;
+}
+.growth__dots li > i {
+  width: 7px;
+  height: 7px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: #0d0a07;
+  border: 1px solid rgba(241, 230, 208, 0.4);
+  transition:
+    background 0.4s,
+    border-color 0.4s,
+    transform 0.4s;
+}
+.growth__dots li.is-past,
+.growth__dots li.is-active {
+  color: var(--cream-2);
+}
+.growth__dots li.is-past > i {
+  background: var(--amber);
+  border-color: var(--amber);
+}
+.growth__dots li.is-active > i {
+  background: var(--amber);
+  border-color: var(--amber);
+  transform: scale(1.6);
+  box-shadow: 0 0 12px rgba(246, 193, 90, 0.7);
+}
+
+.growth__dust {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, rgba(255, 220, 160, 0.5), transparent 60%),
+    radial-gradient(1px 1px at 70% 20%, rgba(255, 220, 160, 0.45), transparent 60%),
+    radial-gradient(1.5px 1.5px at 40% 70%, rgba(255, 220, 160, 0.4), transparent 60%),
+    radial-gradient(1px 1px at 85% 60%, rgba(255, 220, 160, 0.4), transparent 60%),
+    radial-gradient(1px 1px at 10% 80%, rgba(255, 220, 160, 0.35), transparent 60%);
+  animation: dust 14s linear infinite alternate;
+}
+@keyframes dust {
+  to {
+    transform: translate3d(-2%, -3%, 0);
+  }
+}
+
+@media (max-width: 820px) {
+  .gframe {
+    --w: min(62vw, 42vh);
+    top: 44%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .growth__dust {
+    animation: none;
+  }
+}

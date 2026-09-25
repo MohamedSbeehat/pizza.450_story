@@ -1,0 +1,219 @@
+.sunrise {
+  background: #050407;
+}
+
+.sunrise__cam {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+/* Tall gradient that slides up: night → deep red → ember → warm light */
+.sunrise__sky {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 320%;
+  background: linear-gradient(
+    180deg,
+    #050407 0%,
+    #0c080a 14%,
+    #1c100d 27%,
+    #36170f 40%,
+    #5e2415 51%,
+    #86351a 60%,
+    #b4521f 69%,
+    #d97a31 78%,
+    #eea456 86%,
+    #f5c985 93%,
+    #f8e1b3 100%
+  );
+  will-change: transform;
+}
+
+.sunrise__stars {
+  position: absolute;
+  inset: 0 0 45% 0;
+  background-image:
+    radial-gradient(1.2px 1.2px at 8% 14%, #fff5e0 60%, transparent 62%),
+    radial-gradient(1px 1px at 17% 32%, #fff5e0 60%, transparent 62%),
+    radial-gradient(1.4px 1.4px at 26% 9%, #fff 60%, transparent 62%),
+    radial-gradient(1px 1px at 34% 41%, #fff5e0 60%, transparent 62%),
+    radial-gradient(1px 1px at 44% 22%, #fff5e0 60%, transparent 62%),
+    radial-gradient(1.3px 1.3px at 53% 6%, #fff 60%, transparent 62%),
+    radial-gradient(1px 1px at 61% 30%, #fff5e0 60%, transparent 62%),
+    radial-gradient(1px 1px at 68% 15%, #fff5e0 60%, transparent 62%),
+    radial-gradient(1.5px 1.5px at 76% 38%, #fff 60%, transparent 62%),
+    radial-gradient(1px 1px at 84% 11%, #fff5e0 60%, transparent 62%),
+    radial-gradient(1px 1px at 91% 27%, #fff5e0 60%, transparent 62%),
+    radial-gradient(1px 1px at 12% 52%, #fff5e0 60%, transparent 62%),
+    radial-gradient(1px 1px at 39% 58%, #fff5e0 60%, transparent 62%),
+    radial-gradient(1.2px 1.2px at 71% 55%, #fff 60%, transparent 62%),
+    radial-gradient(1px 1px at 95% 48%, #fff5e0 60%, transparent 62%);
+}
+
+/* The sun sits on the horizon, slightly left (the text lives on the right) */
+.sunrise__sun {
+  position: absolute;
+  left: 30%;
+  top: 60%;
+  width: 16vh;
+  height: 16vh;
+  margin: -8vh 0 0 -8vh;
+  will-change: transform;
+}
+.sunrise__core,
+.sunrise__halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.sunrise__core {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, #fffaf0 0%, #ffe6b0 38%, #ffc16b 62%, rgba(255, 170, 80, 0) 71%);
+}
+.sunrise__halo {
+  width: 900%;
+  height: 900%;
+  margin: -450% 0 0 -450%;
+  transform: none;
+  background: radial-gradient(circle, rgba(255, 190, 110, 0.55) 0%, rgba(240, 140, 60, 0.22) 22%, rgba(180, 80, 30, 0.08) 45%, transparent 68%);
+  will-change: transform, opacity;
+}
+
+.sunrise__rays {
+  position: absolute;
+  left: 30%;
+  top: 46%;
+  width: 240vmax;
+  height: 240vmax;
+  margin: -120vmax 0 0 -120vmax;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 214, 150, 0.09) 0deg 3deg, transparent 3deg 11deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0, 0, 0, 0.5) 18%, transparent 42%);
+  mask-image: radial-gradient(circle, #000 0%, rgba(0, 0, 0, 0.5) 18%, transparent 42%);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.sunrise__clouds {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.sunrise__clouds i {
+  position: absolute;
+  height: 5vh;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 60%, rgba(255, 176, 112, 0.42), rgba(160, 70, 40, 0.18) 45%, transparent 70%);
+}
+.sunrise__clouds i:nth-child(1) { top: 18%; left: 8%; width: 42vw; }
+.sunrise__clouds i:nth-child(2) { top: 27%; left: 46%; width: 36vw; height: 3.4vh; }
+.sunrise__clouds i:nth-child(3) { top: 36%; left: 18%; width: 30vw; height: 3vh; }
+.sunrise__clouds i:nth-child(4) { top: 45%; left: 58%; width: 44vw; height: 4vh; }
+
+.sunrise__layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  will-change: transform;
+}
+.sunrise__layer svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.sunrise__layer--far {
+  height: 62%;
+}
+.sunrise__layer--far path {
+  fill: #3a1911;
+}
+.sunrise__layer--mid {
+  height: 52%;
+}
+.sunrise__layer--mid path {
+  fill: #1c0e09;
+}
+.sunrise__layer--near {
+  height: 44%;
+}
+.sunrise__layer--near path {
+  fill: #0a0605;
+}
+.sunrise__lights rect {
+  fill: #ffb862;
+  opacity: 0.8;
+}
+.sunrise__glint {
+  opacity: 0;
+  transform-origin: 50% 60%;
+}
+
+/* Warm light caught in the air above the rooftops */
+.sunrise__haze {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 22%;
+  height: 34%;
+  background: linear-gradient(180deg, transparent 0%, rgba(236, 146, 64, 0.3) 55%, rgba(236, 146, 64, 0.08) 85%, transparent 100%);
+}
+
+.sunrise__ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5%;
+  background: #060303;
+}
+
+.sunrise__flare {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 60%;
+  width: 280vmax;
+  height: 280vmax;
+  margin: -140vmax 0 0 -140vmax;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff1d2 0%, #f6b765 9%, #c45f24 22%, #5a2413 36%, #1a0d08 48%);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.sunrise__text {
+  top: 34%;
+}
+.sunrise__scrim {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  background: radial-gradient(ellipse 42% 36% at 78% 38%, rgba(12, 6, 4, 0.42), transparent 100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 820px) {
+  .sunrise__sun {
+    left: 50%;
+    top: 52%;
+  }
+  .sunrise__rays {
+    left: 50%;
+    top: 40%;
+  }
+  .sunrise__text {
+    top: auto;
+  }
+  .sunrise__scrim {
+    background: linear-gradient(0deg, rgba(8, 4, 3, 0.7), transparent 45%);
+  }
+}

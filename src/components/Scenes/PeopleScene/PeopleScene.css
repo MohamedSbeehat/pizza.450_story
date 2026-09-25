@@ -1,0 +1,115 @@
+.people {
+  background: radial-gradient(ellipse 70% 80% at 30% 45%, #1f150e 0%, #0d0a07 55%, #070504 100%);
+}
+
+/* Warm light carried over from the window in Scene 1 */
+.people__warm {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: radial-gradient(circle at 50% 58%, #fff1d2 0%, #f6b765 7%, #c45f24 17%, #5a2413 28%, #1a0d08 38%);
+  pointer-events: none;
+}
+
+/* A soft shaft of light across the portraits, with dust in it */
+.people__beam {
+  position: absolute;
+  inset: -10%;
+  background:
+    linear-gradient(112deg, transparent 32%, rgba(255, 196, 128, 0.07) 42%, rgba(255, 196, 128, 0.12) 47%, transparent 58%),
+    radial-gradient(ellipse 40% 50% at 32% 38%, rgba(232, 137, 43, 0.12), transparent 70%);
+  opacity: 0;
+}
+
+.people__stage {
+  position: absolute;
+  inset: var(--bar) 0;
+}
+
+.portrait {
+  --h: min(66vh, 720px);
+  position: absolute;
+  top: 50%;
+  left: 29%;
+  width: calc(var(--h) * 0.75);
+  height: var(--h);
+  margin: calc(var(--h) * -0.53) 0 0 calc(var(--h) * -0.375);
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+.portrait__frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  /* face emerges from darkness: soft falloff instead of a hard frame */
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0%, #000 16%, #000 72%, transparent 100%),
+    linear-gradient(90deg, transparent 0%, #000 16%, #000 84%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(180deg, transparent 0%, #000 16%, #000 72%, transparent 100%),
+    linear-gradient(90deg, transparent 0%, #000 16%, #000 84%, transparent 100%);
+  mask-composite: intersect;
+}
+.portrait__zoom {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.portrait__media {
+  position: absolute;
+  inset: 0;
+}
+.portrait__shade {
+  position: absolute;
+  inset: 0;
+  background: #0b0907;
+}
+.portrait__caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+}
+.portrait__name {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 1.9vw, 2rem);
+  color: var(--cream);
+}
+.portrait__role {
+  font-size: 0.85rem;
+  color: var(--cream-2);
+}
+
+/* both text blocks share one place; the timeline swaps them */
+.people__text {
+  display: grid;
+}
+.people__block {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+@media (max-width: 820px) {
+  .people__stage {
+    inset: var(--bar) 0 38% 0;
+  }
+  .portrait {
+    --h: min(44vh, 118vw);
+    left: 50%;
+    top: 54%;
+  }
+  .people__beam {
+    background: linear-gradient(160deg, transparent 20%, rgba(255, 196, 128, 0.1) 40%, transparent 60%);
+  }
+}

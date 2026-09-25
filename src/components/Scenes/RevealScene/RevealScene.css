@@ -1,0 +1,75 @@
+.reveal {
+  background: #050403;
+}
+
+.reveal__cam {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+/* warm lights switching on (positions come from REVEAL.lights, in % of the photo) */
+.reveal__glow {
+  position: absolute;
+  aspect-ratio: 1;
+  translate: -50% -50%; /* separate from transform, which GSAP animates */
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 214, 150, 0.55) 0%, rgba(246, 170, 80, 0.22) 30%, transparent 68%);
+  opacity: 0;
+  pointer-events: none;
+}
+.reveal__glow.is-soft {
+  aspect-ratio: 3 / 1;
+  background: radial-gradient(ellipse, rgba(255, 196, 120, 0.2) 0%, rgba(232, 137, 43, 0.08) 40%, transparent 70%);
+}
+
+.reveal__dark {
+  position: absolute;
+  inset: 0;
+  background: #050403;
+}
+
+.reveal__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, rgba(5, 4, 3, 0.85) 0%, rgba(5, 4, 3, 0.35) 38%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(5, 4, 3, 0.6), transparent);
+  opacity: 0;
+}
+
+.reveal__text {
+  position: absolute;
+  z-index: 5;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: calc(var(--bar) + 7vh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.6);
+}
+.reveal__slate {
+  opacity: 0;
+  visibility: hidden;
+}
+.reveal__title {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.05;
+}
+.reveal__lines {
+  display: flex;
+  gap: 0.6em;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+@media (max-width: 820px) {
+  .reveal__lines {
+    flex-direction: column;
+    gap: 0.1em;
+  }
+}

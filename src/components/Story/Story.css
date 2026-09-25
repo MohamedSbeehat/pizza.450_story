@@ -1,0 +1,14 @@
+.world-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  visibility: hidden;
+  background: #0b0806;
+}
+.world-layer.is-visible {
+  visibility: visible;
+}
+.world-layer canvas {
+  display: block;
+}

@@ -1,0 +1,167 @@
+.hud {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  font-family: var(--font-ui);
+}
+
+.hud__top,
+.hud__bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--bar);
+  padding-inline: var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.hud__top {
+  top: 0;
+}
+.hud__bottom {
+  bottom: 0;
+}
+
+.hud button {
+  pointer-events: auto;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* ── Brand mark ───────────────────────────── */
+.hud__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  color: var(--cream);
+  opacity: 0.9;
+  transition: opacity 0.3s;
+}
+.hud__brand:hover {
+  opacity: 1;
+}
+.hud__brand img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+/* ── Chapters ─────────────────────────────── */
+.hud__chapters ol {
+  display: flex;
+  gap: clamp(0.6rem, 1.6vw, 1.8rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hud__chapter {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--cream-3);
+  transition: color 0.5s var(--ease-film);
+}
+.hud__chapter:hover {
+  color: var(--cream-2);
+}
+.hud__no {
+  font-family: var(--font-latin);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+.hud__dash {
+  opacity: 0.5;
+  transition: opacity 0.5s;
+}
+.hud__label {
+  position: relative;
+}
+.hud__label::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: -6px;
+  height: 1px;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.7s var(--ease-film);
+}
+.hud__chapter.is-past {
+  color: var(--cream-2);
+}
+.hud__chapter.is-active {
+  color: var(--cream);
+}
+.hud__chapter.is-active .hud__no {
+  color: var(--amber);
+}
+.hud__chapter.is-active .hud__label::after {
+  transform: scaleX(1);
+}
+
+/* ── Progress ─────────────────────────────── */
+.hud__progress {
+  position: relative;
+  flex: 1;
+  height: 1px;
+  background: rgba(241, 230, 208, 0.14);
+}
+.hud__fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(270deg, var(--amber), var(--orange));
+  transform: scaleX(0);
+  transform-origin: right; /* RTL: the film runs right → left */
+}
+.hud__tick {
+  position: absolute;
+  top: -3px;
+  width: 1px;
+  height: 7px;
+  background: rgba(241, 230, 208, 0.3);
+  transition: background 0.4s;
+}
+.hud__tick.is-past {
+  background: var(--amber);
+}
+.hud__count {
+  font-family: var(--font-latin);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--cream);
+  white-space: nowrap;
+  direction: ltr;
+}
+.hud__count span {
+  color: var(--cream-3);
+}
+
+/* ── Phones: numbers only, active chapter keeps its name ── */
+@media (max-width: 820px) {
+  .hud__brand span {
+    display: none;
+  }
+  .hud__chapters ol {
+    gap: 0.85rem;
+  }
+  .hud__dash,
+  .hud__label {
+    display: none;
+  }
+  .hud__chapter.is-active .hud__dash,
+  .hud__chapter.is-active .hud__label {
+    display: inline;
+  }
+  .hud__label::after {
+    display: none;
+  }
+}

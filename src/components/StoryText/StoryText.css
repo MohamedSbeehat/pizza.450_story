@@ -1,0 +1,64 @@
+.story-text {
+  margin: 0;
+}
+
+/* Each word is its own box so it can move/blur independently.
+   Hidden until the timeline reveals it (GSAP sets inline styles). */
+.story-text .w {
+  display: inline-block;
+  opacity: 0;
+  visibility: hidden;
+}
+.story-text.is-static .w {
+  opacity: 1;
+  visibility: inherit;
+}
+
+/* *accent* — warm light caught in the words */
+.story-text .acc {
+  color: var(--amber);
+  background: linear-gradient(180deg, #f8d58f 0%, #eb9a45 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* room for Arabic descenders/diacritics inside the clipped box */
+  padding-block: 0.08em 0.12em;
+  margin-block: -0.08em -0.12em;
+}
+
+/* [placeholder] — clearly marked, to be replaced with real information */
+.story-text .ph {
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: max(0.72rem, 0.42em);
+  color: #f0c078;
+  border-bottom: 1px dashed rgba(240, 192, 120, 0.7);
+  padding-bottom: 0.1em;
+  line-height: 1.5;
+  vertical-align: middle;
+  white-space: normal;
+}
+
+/* Documentary slate:  ─── الفصل الأول  [2019] */
+.slate {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-ui);
+  font-size: clamp(0.78rem, 0.9vw, 0.92rem);
+  font-weight: 500;
+  color: var(--cream-2);
+}
+.slate__rule {
+  width: clamp(28px, 4vw, 56px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold));
+  flex: none;
+}
+.slate__value {
+  color: var(--cream-3);
+  font-weight: 400;
+}
+.slate .ph {
+  font-size: inherit;
+}

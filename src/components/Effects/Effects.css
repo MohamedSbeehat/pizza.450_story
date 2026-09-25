@@ -1,0 +1,30 @@
+.letterbox {
+  --lb: 0;
+  /* extra height per bar when squeezed to a 2.39:1 scope frame */
+  --bar-extra: max(0px, calc((100vh - 100vw / 2.39) / 2 - var(--bar)));
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+}
+.letterbox__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: calc(var(--bar) + var(--lb) * var(--bar-extra));
+  background: #050403;
+}
+.letterbox__bar--top {
+  top: 0;
+  box-shadow: 0 1px 0 rgba(210, 168, 99, 0.08);
+}
+.letterbox__bar--bottom {
+  bottom: 0;
+  box-shadow: 0 -1px 0 rgba(210, 168, 99, 0.08);
+}
+
+@media (max-width: 820px), (orientation: portrait) {
+  .letterbox {
+    --bar-extra: 5vh;
+  }
+}

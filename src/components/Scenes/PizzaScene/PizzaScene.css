@@ -1,0 +1,77 @@
+/* the step words share one place; the timeline swaps them */
+.pizza__words {
+  display: grid;
+}
+.pizza__words > * {
+  grid-area: 1 / 1;
+}
+
+/* ── Ingredient label pinned to a 3D object ─────────────────────
+   .ingredient-tag is moved to the object's screen position every frame;
+   the inner part is faded in/out by the scroll timeline. */
+.ingredient-tag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+.ingredient-tag__inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+.ingredient-tag__dot {
+  position: absolute;
+  left: -5px;
+  top: -5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--amber);
+  background: rgba(11, 9, 7, 0.35);
+  box-shadow: 0 0 14px rgba(246, 193, 90, 0.6);
+}
+.ingredient-tag__dot::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+/* leader line rising to the label */
+.ingredient-tag__line {
+  position: absolute;
+  left: 0;
+  bottom: 6px;
+  width: 1px;
+  height: clamp(44px, 7vh, 70px);
+  background: linear-gradient(0deg, var(--amber), rgba(243, 183, 92, 0.1));
+}
+.ingredient-tag__label {
+  position: absolute;
+  bottom: calc(clamp(44px, 7vh, 70px) + 10px);
+  left: 0;
+  translate: -50% 0;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid rgba(243, 183, 92, 0.45);
+  border-radius: 999px;
+  background: rgba(11, 9, 7, 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.3vw, 1.3rem);
+  color: var(--cream);
+  white-space: nowrap;
+}
+
+@media (max-width: 820px) {
+  .ingredient-tag__label {
+    font-size: 0.95rem;
+  }
+}

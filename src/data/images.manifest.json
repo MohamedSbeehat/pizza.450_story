@@ -1,0 +1,47 @@
+{
+  "/images/brand/logo": {
+    "w": 384,
+    "h": 384
+  },
+  "/images/people/shadi": {
+    "w": 808,
+    "h": 1086
+  },
+  "/images/people/ahmad": {
+    "w": 936,
+    "h": 1424
+  },
+  "/images/story/facade-vision": {
+    "w": 1484,
+    "h": 932
+  },
+  "/images/story/facade-sketch": {
+    "w": 1484,
+    "h": 932,
+    "ext": "webp"
+  },
+  "/images/story/facade-night": {
+    "w": 1540,
+    "h": 1080
+  },
+  "/images/story/facade-day": {
+    "w": 948,
+    "h": 1212
+  },
+  "/images/story/facade-sign": {
+    "w": 948,
+    "h": 834
+  },
+  "/images/story/oven-copper": {
+    "w": 968,
+    "h": 1544
+  },
+  "/images/story/oven-install": {
+    "w": 960,
+    "h": 1208
+  },
+  "/images/story/pizza": {
+    "w": 1600,
+    "h": 1427
+  }
+}

@@ -1,0 +1,99 @@
+.scene--hero {
+  opacity: 1;
+  visibility: visible;
+  background: radial-gradient(ellipse 80% 60% at 50% 110%, #1d130d 0%, var(--coal) 60%);
+}
+
+/* A single faint warm light far away — "a small place". */
+.hero__glow {
+  position: absolute;
+  left: 50%;
+  bottom: -38vh;
+  width: 110vh;
+  height: 80vh;
+  margin-left: -55vh;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(232, 137, 43, 0.28) 0%, rgba(143, 42, 30, 0.12) 38%, transparent 70%);
+  opacity: 0;
+}
+
+.hero__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.2rem, 3vh, 2.4rem);
+  padding: calc(var(--bar) + 2rem) var(--gutter);
+  text-align: center;
+}
+
+.hero__title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05em;
+}
+.hero__line {
+  display: block;
+}
+.hero__line:first-child {
+  color: var(--cream-2);
+  font-size: 0.62em;
+}
+
+.hero__sub {
+  color: var(--cream-2);
+}
+
+.hero__hint-wrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--bar) + 3.5vh);
+  display: flex;
+  justify-content: center;
+}
+.hero__hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--cream-2);
+  font-size: 1.05rem;
+  opacity: 0;
+  visibility: hidden;
+}
+.hero__rail {
+  position: relative;
+  width: 1px;
+  height: 46px;
+  background: rgba(241, 230, 208, 0.16);
+  overflow: hidden;
+}
+.hero__rail i {
+  position: absolute;
+  left: 0;
+  top: -40%;
+  width: 1px;
+  height: 40%;
+  background: linear-gradient(180deg, transparent, var(--amber));
+  animation: rail 2.2s var(--ease-film) infinite;
+}
+.hero__arrow {
+  font-size: 0.9rem;
+  color: var(--amber);
+  line-height: 1;
+}
+@keyframes rail {
+  to {
+    top: 110%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__rail i {
+    animation: none;
+    top: 30%;
+  }
+}
