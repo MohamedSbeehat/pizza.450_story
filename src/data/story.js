@@ -158,6 +158,12 @@ export const PIZZA = {
   //   tags   where each label points, as a fraction of the film frame
   //          (x from the left, y from the top), and when it shows
   film: {
+    // false = the chapter plays as the designed 3D film (golden light in the
+    // dark); true = the AI video in public/video/pizza-film (npm run film).
+    useFilm: false,
+    // The kitchen light flickers and goes out as this clip starts; from here
+    // on the film is dark, lit only in gold (see film/shots.json → night).
+    lightsOut: 'sauce',
     clips: [
       { id: 'dough', at: [0.05, 1.2] },
       { id: 'stretch', at: [1.2, 2.3] },

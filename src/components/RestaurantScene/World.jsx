@@ -7,6 +7,7 @@ import { useStory } from '../../story/store';
 import { SHOTS } from '../../three/worldState';
 import { CameraRig } from './CameraRig';
 import { Lighting } from './Lighting';
+import { Beams } from './Beams';
 import { Restaurant } from './Restaurant';
 import { Oven } from './Oven';
 import { Pizza } from '../PizzaAnimation/Pizza';
@@ -81,6 +82,7 @@ export default function World() {
       </Environment>
 
       <Lighting />
+      <Beams />
       <Restaurant />
       <Oven />
       <Pizza />

@@ -23,8 +23,8 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { ffmpeg, nightFilter } from './film-shared.mjs';
 
-const ffmpeg = process.env.FFMPEG_PATH || 'ffmpeg';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const SRC = path.join(ROOT, 'film');
 const OUT = path.join(ROOT, 'public/video/pizza-film');
@@ -63,11 +63,18 @@ const clips = plan.shots
   });
 if (!clips.length) throw new Error('No clips in /film');
 
-/** The filter that turns input `i` into a graded, trimmed clip at the film size. */
+/**
+ * The filter that turns input `i` into a graded, trimmed clip at the film size.
+ * A shot with `night` first goes through «lights out» (film-shared.mjs): dark
+ * kitchen, golden spotlight on the food.
+ */
 function clipFilter(c, i) {
   const trim = c.trim ? `trim=start=${c.trim[0]}:end=${c.trim[1]},` : '';
   const fit = `scale=${WIDTH}:${HEIGHT}:force_original_aspect_ratio=increase:flags=lanczos,crop=${WIDTH}:${HEIGHT},setsar=1`;
-  return `[${i}:v]${trim}setpts=PTS-STARTPTS,fps=${FPS},${fit},${c.grade ? c.grade + ',' : ''}${GRADE},format=yuv420p,settb=1/${FPS}`;
+  const head = `[${i}:v]${trim}setpts=PTS-STARTPTS,fps=${FPS},${fit}`;
+  const tail = `${c.grade ? c.grade + ',' : ''}${GRADE},format=yuv420p,settb=1/${FPS}`;
+  if (!c.night) return `${head},${tail}`;
+  return `${head}[r${i}];${nightFilter(c.night, WIDTH, HEIGHT, `r${i}`, `n${i}`, `k${i}`)};[n${i}]${tail}`;
 }
 
 /** Exact number of frames a clip has after trim + resample. */

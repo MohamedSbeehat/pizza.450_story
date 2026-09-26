@@ -29,7 +29,7 @@ const BEATS_3D = [
   [2.3, 4.2],
   [4.5, 6.0],
   [6.4, 8.2],
-  [8.9, 9.8],
+  [9.4, 10.3],
 ];
 const BEATS_FILM = [
   [0.4, 2.1],
@@ -80,6 +80,7 @@ export function PizzaScene() {
   const film = useRef(null);
   const filmWrap = useRef(null);
   const shade = useRef(null);
+  const blackout = useRef(null);
   const ending = useRef({});
   const [filmFailed, setFilmFailed] = useState(false);
   const [filmReady, setFilmReady] = useState(false);
@@ -120,6 +121,11 @@ export function PizzaScene() {
   useSceneTimeline((tl) => {
     fadeIn(tl, root.current, 0, 0.02);
 
+    // ── The light: a dark kitchen, a golden pool on the counter ───
+    // (like a food commercial; it grows warmer as the pizza nears the fire)
+    worldTo(tl, { mood: 0.8 }, 0, S(0.8), 'power1.inOut');
+    worldTo(tl, { mood: 1 }, S(4.3), S(1.8));
+
     // ── 01 Dough ─────────────────────────────────────────────────
     shot(tl, 'doughLow', 0, S(0.5), 'power2.inOut');
     worldTo(tl, { flour: 1 }, S(0.2), S(0.7), 'power1.out');
@@ -149,13 +155,33 @@ export function PizzaScene() {
       tl.to(heat.current, { autoAlpha: 0, duration: S(0.4) }, S(8.0));
     }
 
-    // ── …out, and the finishing touch ────────────────────────────
-    worldTo(tl, { fire: 0.55 }, S(8.2), S(0.4));
-    worldTo(tl, { out: 1 }, S(8.2), S(0.6), 'power1.inOut');
-    shot(tl, 'finishTop', S(8.55), S(0.45));
-    worldTo(tl, { finish: 1 }, S(8.85), S(0.9), 'none');
-    worldTo(tl, { steam: 1 }, S(9.6), S(0.3));
-    shot(tl, 'pizzaHero', S(9.6), S(0.4), 'power2.inOut');
+    // ── «The lights go out» ──────────────────────────────────────
+    // the camera steps back from the fire, the kitchen lights flicker and die:
+    // for a moment only the oven glows
+    shot(tl, 'ovenDark', S(8.0), S(0.5), 'power2.inOut');
+    worldTo(tl, { blackout: 0.6 }, S(8.35), S(0.04), 'power4.in');
+    worldTo(tl, { blackout: 0.12 }, S(8.39), S(0.05));
+    worldTo(tl, { blackout: 0.85 }, S(8.44), S(0.04), 'power4.in');
+    worldTo(tl, { blackout: 0.4 }, S(8.48), S(0.03));
+    worldTo(tl, { blackout: 1 }, S(8.51), S(0.05));
+    // …then golden beams slowly come down from above and from the sides
+    worldTo(tl, { beams: 1 }, S(8.9), S(0.8), 'power1.inOut');
+
+    // ── Out of the fire, into the light — and the finishing touch ─
+    worldTo(tl, { out: 1 }, S(9.0), S(0.7), 'power1.inOut');
+    worldTo(tl, { fire: 0.7 }, S(9.2), S(0.4));
+    shot(tl, 'finishTop', S(9.45), S(0.45));
+    worldTo(tl, { finish: 1 }, S(9.7), S(0.8), 'none');
+    worldTo(tl, { steam: 1 }, S(10.1), S(0.4));
+
+    // ── The hero: the camera circles the pizza, the light sweeps across it
+    shot(tl, 'heroOrbitA', S(10.2), S(0.6), 'sine.inOut');
+    worldTo(tl, { sweep: 1 }, S(10.2), S(1.5), 'sine.inOut');
+    shot(tl, 'heroOrbitB', S(10.8), S(0.6), 'sine.inOut');
+    shot(tl, 'heroClose', S(11.35), S(0.4), 'power2.inOut');
+
+    // …and the lights come back on for the first table
+    worldTo(tl, { mood: 0, blackout: 0, beams: 0 }, S(11.72), S(0.26), 'power1.inOut');
 
     // ── Words + checklist ────────────────────────────────────────
     const beats = PIZZA_FILM ? BEATS_FILM : BEATS_3D;
@@ -179,6 +205,20 @@ export function PizzaScene() {
         tl.fromTo(head, { v: from }, { v: to, duration: S(b - a), ease: 'none', immediateRender: i === 0, onUpdate: seek }, S(a));
       });
       fadeIn(tl, filmWrap.current, 0, S(0.3));
+
+      // «Lights out»: the kitchen light flickers and dies where PIZZA.film.lightsOut
+      // starts; that shot comes out of the dark, lit only in gold.
+      const dark = PIZZA.film.clips.find((c) => c.id === PIZZA.film.lightsOut);
+      if (dark && !stills) {
+        const t = dark.at[0];
+        const b = blackout.current;
+        tl.fromTo(b, { autoAlpha: 0 }, { autoAlpha: 0.72, duration: S(0.03), ease: 'power4.in' }, S(t - 0.2));
+        tl.to(b, { autoAlpha: 0.12, duration: S(0.035) }, S(t - 0.165));
+        tl.to(b, { autoAlpha: 0.9, duration: S(0.03), ease: 'power4.in' }, S(t - 0.1));
+        tl.to(b, { autoAlpha: 0.45, duration: S(0.03) }, S(t - 0.07));
+        tl.to(b, { autoAlpha: 1, duration: S(0.03) }, S(t - 0.035));
+        tl.to(b, { autoAlpha: 0, duration: S(0.5), ease: 'power1.inOut' }, S(t + 0.12));
+      }
       // the finished pizza settles: a slow push-in while the light goes down
       tl.fromTo(filmWrap.current, { scale: 1 }, { scale: stills ? 1 : 1.06, duration: S(FILM_OUT - END), ease: 'sine.out' }, S(END));
       fadeOut(tl, filmWrap.current, S(FILM_OUT), S(0.2));
@@ -199,8 +239,8 @@ export function PizzaScene() {
       tag('flour', 0.35, 1.2);
       tag('sauce', 2.1, 2.75);
       tag('cheese', 4.4, 5.0);
-      tag('grated', 8.8, 9.25);
-      tag('basil', 9.2, 9.55);
+      tag('grated', 9.72, 10.15);
+      tag('basil', 10.1, 10.45);
     }
 
     // ── The ending: logo, name, line, buttons ────────────────────
@@ -229,6 +269,7 @@ export function PizzaScene() {
           <ScrollFilm ref={film} film={PIZZA_FILM} stillsOnly={stills} onFailed={onFilmFailed} onReady={onFilmReady} />
         </div>
       ) : null}
+      {PIZZA_FILM ? <div ref={blackout} className="pizza__blackout" aria-hidden="true" /> : null}
       <div ref={heat} className="pizza__heat" aria-hidden="true" />
       <div ref={shade} className="pizza__shade" aria-hidden="true" />
 

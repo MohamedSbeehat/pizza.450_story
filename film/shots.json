@@ -34,7 +34,13 @@
       "file": "02-stretch.mp4",
       "start": "keys/stretch.jpg",
       "crop": [90, 104, 630, 472],
-      "focus": { "x": 0.55, "y": 0.66, "rx": 0.56, "ry": 0.6, "blur": 7 },
+      "focus": {
+        "x": 0.55,
+        "y": 0.66,
+        "rx": 0.56,
+        "ry": 0.6,
+        "blur": 7
+      },
       "seconds": 5,
       "seed": 451,
       "prompt": "High-angle close-up of a pizzaiolo's hands giving the final shape to a round Neapolitan pizza base on a floured white marble counter. The base is already stretched: the hands turn it a little with each move and gently press and even out the puffy rim with the fingertips, so the edge becomes perfectly round and even. The dough is soft, supple and slightly translucent in the light. Slow, subtle push-in.",
@@ -45,11 +51,24 @@
       "file": "03-sauce.mp4",
       "start": "keys/sauce.jpg",
       "crop": [46, 0, 676, 507],
-      "focus": { "x": 0.53, "y": 0.56, "rx": 0.52, "ry": 0.66, "blur": 7 },
+      "focus": {
+        "x": 0.53,
+        "y": 0.56,
+        "rx": 0.52,
+        "ry": 0.66,
+        "blur": 7
+      },
       "seconds": 5,
       "seed": 455,
       "prompt": "Three-quarter high-angle close-up. A stainless steel ladle pours thick, glossy red tomato sauce onto the centre of the round pizza base on the floured marble counter, then the back of the ladle spreads the sauce outward in slow, steady circles, leaving a clean rim of dough. The sauce is rich and catches the warm light. Slow, steady camera.",
-      "details": "Real details: glossy sauce, fine flour dust on the marble."
+      "details": "Real details: glossy sauce, fine flour dust on the marble.",
+      "night": {
+        "x": 0.5,
+        "y": 0.68,
+        "rx": 0.36,
+        "ry": 0.4
+      },
+      "note": "Made in daylight; «night» turns it dark with a golden spotlight when the film is built (the lights go out after the dough)."
     },
     {
       "id": "cheese",
@@ -57,13 +76,27 @@
       "startFromLastFrameOf": "03-sauce.mp4",
       "seconds": 5,
       "seed": 456,
-      "prompt": "The same three-quarter close-up. The ladle lifts out of frame, and a pizzaiolo's hands place torn pieces of fresh white mozzarella one by one onto the red tomato sauce; the soft, milky cheese stretches into strands as it is pulled apart. The mozzarella is moist and glistening. Slow, steady camera.",
-      "details": "Real details: cheese stretching into milky strands, glossy sauce."
+      "prompt": "The same three-quarter close-up in the dark, a single warm golden spotlight on the pizza. The ladle lifts out of frame, and a pizzaiolo's hands place torn pieces of fresh white mozzarella one by one onto the red tomato sauce; the soft, milky cheese stretches into strands as it is pulled apart, glistening gold in the light. Slow, steady camera.",
+      "details": "Real details: cheese stretching into milky strands, glossy sauce catching golden highlights.",
+      "startNight": {
+        "x": 0.5,
+        "y": 0.68,
+        "rx": 0.36,
+        "ry": 0.4
+      },
+      "style": "Luxury food commercial, photorealistic. The kitchen lights are off: deep black background, lit only by a warm golden spotlight and firelight, golden highlights and a soft golden glow, macro lens, shallow depth of field, slow smooth camera movement, real textures and real-world physics."
     },
     {
       "id": "oven",
       "file": "05-oven.mp4",
-      "note": "Already made from keys/oven.jpg (the real copper oven), seed 452, on the Hugging Face Space."
+      "note": "Already made from keys/oven.jpg (the real copper oven), seed 452, on the Hugging Face Space.",
+      "night": {
+        "x": 0.56,
+        "y": 0.7,
+        "rx": 0.36,
+        "ry": 0.42,
+        "floor": 0.08
+      }
     },
     {
       "id": "bake",
@@ -74,7 +107,14 @@
       "seed": 453,
       "style": "Photorealistic cinematic footage, warm firelight, close-up macro lens with shallow depth of field, slow smooth camera movement, real textures and real-world physics.",
       "prompt": "Inside a wood-fired oven, low close-up at the level of the oven floor. The pizza bakes: the mozzarella melts, bubbles and spreads into the red sauce, the already charred crust puffs up a little more, and the flames flicker and roll over the burning logs behind it. Locked-off camera with a gentle time-lapse feel.",
-      "details": "Real details: cheese melting and bubbling, puffed charred crust edges, wood-fired oven flames."
+      "details": "Real details: cheese melting and bubbling, puffed charred crust edges, wood-fired oven flames.",
+      "night": {
+        "x": 0.5,
+        "y": 0.62,
+        "rx": 0.46,
+        "ry": 0.46,
+        "floor": 0.07
+      }
     },
     {
       "id": "out",
@@ -82,20 +122,33 @@
       "startFromLastFrameOf": "06-bake.mp4",
       "seconds": 4,
       "seed": 457,
-      "style": "Photorealistic cinematic footage, warm firelight, close-up macro lens with shallow depth of field, slow smooth camera movement, real textures and real-world physics.",
-      "prompt": "A long-handled metal pizza peel slides in under the baked pizza and slowly draws it out of the wood-fired oven toward the camera, and the camera eases back with it. The crust is puffed and charred, the cheese still bubbling, the flames flicker behind.",
-      "details": "Real details: puffed charred crust edges, bubbling cheese, wood-fired oven flames."
+      "style": "Luxury food commercial, photorealistic. The kitchen lights are off: deep black background, lit only by a warm golden spotlight and firelight, golden highlights and a soft golden glow, macro lens, shallow depth of field, slow smooth camera movement, real textures and real-world physics.",
+      "prompt": "A long-handled metal pizza peel slides in under the baked pizza and slowly draws it out of the wood-fired oven toward the camera, and the camera eases back with it. Golden firelight glows on the puffed, charred crust and the bubbling cheese; sparks and embers drift up into the darkness.",
+      "details": "Real details: puffed charred crust edges, bubbling cheese, glowing embers.",
+      "startNight": {
+        "x": 0.5,
+        "y": 0.62,
+        "rx": 0.46,
+        "ry": 0.46,
+        "floor": 0.07
+      }
     },
     {
       "id": "finish",
       "file": "08-finish.mp4",
       "start": "../photo/pizza.png",
-      "crop": [42, 252, 672, 504],
+      "crop": [50, 100, 800, 600],
       "seconds": 4,
       "seed": 454,
-      "style": "Photorealistic cinematic footage, warm golden light, close-up macro lens with shallow depth of field, slow smooth camera movement, real textures and real-world physics.",
-      "prompt": "Hero close-up of the freshly baked Neapolitan margherita in its kraft pizza box. Gentle wisps of steam rise from the hot melted mozzarella, the cheese and a touch of olive oil glisten, fresh basil leaves rest on top, and the charred, puffy crust shows its texture. Very slow push-in; everything else stays still.",
-      "details": "Real details: steam, glistening melted cheese, puffed charred crust edges."
+      "style": "Luxury food commercial, photorealistic. The kitchen lights are off: deep black background, lit only by a warm golden spotlight and firelight, golden highlights and a soft golden glow, macro lens, shallow depth of field, slow smooth camera movement, real textures and real-world physics.",
+      "prompt": "Hero shot in the dark: the freshly baked Neapolitan margherita in its kraft box glows under a warm golden spotlight. Soft wisps of steam rise from the hot melted mozzarella and catch the golden light, the cheese and a touch of olive oil glisten, fresh basil leaves rest on top, and the charred, puffy crust shows its texture. Very slow push-in; everything else stays still.",
+      "details": "Real details: steam glowing gold, glistening melted cheese, puffed charred crust edges.",
+      "startNight": {
+        "x": 0.42,
+        "y": 0.6,
+        "rx": 0.38,
+        "ry": 0.42
+      }
     }
   ]
 }

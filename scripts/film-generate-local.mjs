@@ -24,9 +24,8 @@
 import { execFileSync, spawn } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, openSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import sharp from 'sharp';
+import { ffmpeg, promptOf, startFrame } from './film-shared.mjs';
 
-const ffmpeg = process.env.FFMPEG_PATH || 'ffmpeg';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const FILM = path.join(ROOT, 'film');
 const TAKES = path.join(FILM, 'takes');
@@ -45,49 +44,6 @@ const only = args.filter((a, i) => !a.startsWith('--') && !(args[i - 1] || '').m
 const seedOverride = option('seed') ? Number(option('seed')) : undefined;
 
 mkdirSync(TAKES, { recursive: true });
-
-/* ───────────────────────── start frames ───────────────────────── */
-
-/** Last frame of a clip, as PNG bytes (start of a chained shot). */
-function lastFrame(clip) {
-  return execFileSync(ffmpeg, ['-hide_banner', '-loglevel', 'error', '-sseof', '-0.2', '-i', clip, '-update', '1', '-f', 'image2pipe', '-vcodec', 'png', '-'], {
-    maxBuffer: 64 * 1024 * 1024,
-  });
-}
-
-/**
- * The start frame at the render size: cropped (tighter, macro-like framing),
- * then softly blurred outside the `focus` ellipse so a mismatched background
- * melts into bokeh. Returns PNG bytes.
- */
-async function startFrame(shot) {
-  const W = L.width;
-  const H = L.height;
-  const src = shot.startFromLastFrameOf ? lastFrame(path.join(FILM, shot.startFromLastFrameOf)) : readFileSync(path.join(FILM, shot.start));
-  let img = sharp(src);
-  if (shot.crop) {
-    const [left, top, width, height] = shot.crop;
-    img = img.extract({ left, top, width, height });
-  }
-  const base = await img.resize(W, H, { fit: 'cover', kernel: 'lanczos3' }).removeAlpha().png().toBuffer();
-  if (!shot.focus) return base;
-
-  // alpha = 1 inside the ellipse, easing to 0 outside it (smoothstep)
-  const { x, y, rx, ry, blur, feather = 0.35 } = shot.focus;
-  const mask = Buffer.alloc(W * H);
-  for (let j = 0; j < H; j++) {
-    for (let i = 0; i < W; i++) {
-      const d = Math.hypot((i / W - x) / rx, (j / H - y) / ry);
-      const t = Math.min(1, Math.max(0, (1 + feather - d) / (2 * feather)));
-      mask[j * W + i] = Math.round(255 * t * t * (3 - 2 * t));
-    }
-  }
-  const sharpPart = await sharp(base)
-    .joinChannel(mask, { raw: { width: W, height: H, channels: 1 } })
-    .png()
-    .toBuffer();
-  return sharp(base).blur(blur).composite([{ input: sharpPart }]).png().toBuffer();
-}
 
 /* ───────────────────────── ComfyUI ───────────────────────── */
 
@@ -229,10 +185,10 @@ async function generate(shot) {
   const nag = flag('nag');
   const frames = 1 + Math.min(80, Math.max(8, Math.round(shot.seconds * L.fps))); // like the Space
   const stem = `${shot.file.replace(/\.mp4$/, '')}.s${seed}${nag ? '-nag' : ''}`;
-  const start = await startFrame(shot);
+  const start = await startFrame(shot, FILM, L.width, L.height);
   writeFileSync(path.join(TAKES, `${stem}.start.png`), start);
 
-  const prompt = [shot.prompt, shot.details, shot.style || plan.style].filter(Boolean).join(' ');
+  const prompt = promptOf(shot, plan);
   const image = await upload(start, `pizza-film-${stem}.png`);
   const prefix = `pizza-film/${stem}-${Date.now()}`;
   const t0 = Date.now();
@@ -271,7 +227,7 @@ const todo = only.length
 if (flag('keys')) {
   for (const shot of todo.filter((s) => s.start)) {
     const out = path.join(TAKES, `${shot.id}.start.png`);
-    writeFileSync(out, await startFrame(shot));
+    writeFileSync(out, await startFrame(shot, FILM, L.width, L.height));
     console.log(`${shot.id.padEnd(8)} → ${path.relative(ROOT, out)}`);
   }
   process.exit(0);

@@ -1,55 +1,42 @@
 /**
  * Generates the pizza-film clips on hosted cloud GPUs (a Hugging Face Space
  * running Wan 2.2 image-to-video). Nothing runs on the local GPU: this script
- * only uploads the start frames and downloads the finished clips.
- *
- * Meant to run in a Claude cloud session (see README → «فيلم صناعة البيتزا»).
+ * only prepares and uploads the start frames and downloads the finished clips.
  *
  *     HF_TOKEN=hf_... npm run film:generate            # all missing clips
  *     HF_TOKEN=hf_... npm run film:generate -- sauce   # only these ids (re-made)
  *
- * Shots, prompts and start frames: film/shots.json and film/keys/.
- * Clips are written to film/<NN-id>.mp4; existing ones are skipped unless
- * their id is passed. Then run `npm run film` to build the site video.
+ * Shots, prompts and start frames: film/shots.json and film/keys/ — prepared
+ * exactly like film-generate-local.mjs (film-shared.mjs). Clips are written
+ * to film/<file>; existing ones are skipped unless their id is passed; times
+ * go to film/renders.json. Then run `npm run film` to build the site video.
+ * Without HF_TOKEN the small anonymous daily GPU quota is used.
  */
-import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { Client, handle_file } from '@gradio/client';
-import ffmpegStatic from 'ffmpeg-static';
+import { promptOf, startFrame } from './film-shared.mjs';
 
-const ffmpeg = process.env.FFMPEG_PATH || (ffmpegStatic && existsSync(ffmpegStatic) ? ffmpegStatic : 'ffmpeg');
 const ROOT = path.resolve(import.meta.dirname, '..');
 const FILM = path.join(ROOT, 'film');
 const plan = JSON.parse(readFileSync(path.join(FILM, 'shots.json'), 'utf8'));
+const { width: W, height: H } = plan.local;
 const only = process.argv.slice(2);
-
-// The owner's rule: generation happens in the cloud, never on their Windows PC.
-if (process.platform === 'win32' && !process.env.FILM_ALLOW_WINDOWS) {
-  console.error('This script is meant for the cloud session (Linux). Stopping.');
-  process.exit(1);
-}
 
 const token = process.env.HF_TOKEN;
 if (!token) console.warn('HF_TOKEN is not set: using the small anonymous GPU quota.');
 const client = await Client.connect(plan.space, token ? { token } : {});
 
-/** Last frame of a clip, as a PNG file (start of a chained shot). */
-function lastFrame(clip) {
-  const out = path.join(mkdtempSync(path.join(tmpdir(), 'film-')), 'last.png');
-  execFileSync(ffmpeg, ['-hide_banner', '-loglevel', 'error', '-y', '-sseof', '-0.5', '-i', clip, '-update', '1', out]);
-  return out;
-}
+const rendersFile = path.join(FILM, 'renders.json');
+const renders = existsSync(rendersFile) ? JSON.parse(readFileSync(rendersFile, 'utf8')) : [];
 
 async function generate(shot) {
-  const start = shot.startFromLastFrameOf ? lastFrame(path.join(FILM, shot.startFromLastFrameOf)) : path.join(FILM, shot.start);
-  const type = start.endsWith('.png') ? 'image/png' : 'image/jpeg';
+  const start = await startFrame(shot, FILM, W, H);
   const t0 = Date.now();
   const job = client.submit('/generate_video', {
-    input_image: handle_file(new Blob([readFileSync(start)], { type })),
-    prompt: shot.prompt,
-    steps: 6,
+    input_image: handle_file(new Blob([start], { type: 'image/png' })),
+    prompt: promptOf(shot, plan),
+    steps: plan.local.steps,
     negative_prompt: plan.negative,
     duration_seconds: shot.seconds,
     guidance_scale: 1,
@@ -57,23 +44,35 @@ async function generate(shot) {
     seed: shot.seed,
     randomize_seed: false,
   });
+  let last = null;
   for await (const m of job) {
+    if (process.env.FILM_DEBUG) console.log(JSON.stringify(m).slice(0, 300));
+    if (m.type === 'status') last = m;
     if (m.type === 'status' && m.stage === 'error') throw new Error(m.message || 'generation failed');
     if (m.type === 'data') {
       const v = m.data[0];
       const url = v?.video?.url || v?.url;
       const buf = Buffer.from(await (await fetch(url, token ? { headers: { Authorization: `Bearer ${token}` } } : {})).arrayBuffer());
       writeFileSync(path.join(FILM, shot.file), buf);
-      return ((Date.now() - t0) / 1000).toFixed(0);
+      const seconds = Math.round((Date.now() - t0) / 1000);
+      renders.push({ id: shot.id, file: shot.file, seed: shot.seed, where: 'space', seconds, date: new Date().toISOString() });
+      writeFileSync(rendersFile, JSON.stringify(renders, null, 2) + '\n');
+      return seconds;
     }
   }
-  throw new Error('no result');
+  throw new Error(last?.message || `no result (last status: ${last?.stage || 'none'})`);
 }
 
-for (const shot of plan.shots) {
-  if (!shot.prompt) continue; // made elsewhere
-  const target = path.join(FILM, shot.file);
-  if (only.length ? !only.includes(shot.id) : existsSync(target)) continue;
+const makeable = (s) => s && (s.start || s.startFromLastFrameOf);
+const todo = only.length
+  ? only.map((id) => plan.shots.find((s) => s.id === id)).filter(makeable)
+  : plan.shots.filter((s) => makeable(s) && !existsSync(path.join(FILM, s.file)));
+
+for (const shot of todo) {
+  if (shot.startFromLastFrameOf && !existsSync(path.join(FILM, shot.startFromLastFrameOf))) {
+    console.log(`${shot.id.padEnd(8)} skipped: needs film/${shot.startFromLastFrameOf} first`);
+    continue;
+  }
   process.stdout.write(`${shot.id.padEnd(8)} … `);
   try {
     const secs = await generate(shot);
@@ -82,7 +81,7 @@ for (const shot of plan.shots) {
     console.log('FAILED');
     console.error(`  ${e.message}`);
     if (/quota/i.test(e.message)) {
-      console.error('  GPU quota reached. Run again later (it resumes), or use a Hugging Face PRO token.');
+      console.error('  GPU quota reached. Run again later (it resumes), or use a Hugging Face token.');
       process.exit(2);
     }
   }

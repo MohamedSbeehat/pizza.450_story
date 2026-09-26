@@ -87,6 +87,16 @@
 .pizza__film.is-off {
   display: none;
 }
+/* «lights out» between the dough and the sauce: over the film, under the words */
+.pizza__blackout {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: #050403;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
 
 /* ── The ending: the finished pizza settles, then logo + buttons ─── */
 .pizza__shade {
