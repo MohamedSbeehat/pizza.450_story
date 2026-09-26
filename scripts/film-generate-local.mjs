@@ -105,7 +105,9 @@ async function ensureServer() {
   const out = openSync(logFile, 'a');
   server = spawn(
     path.join(COMFY_DIR, 'python_embeded', 'python.exe'),
-    ['-u', '-s', 'ComfyUI/main.py', '--windows-standalone-build', '--listen', '127.0.0.1', '--port', '8188', '--disable-auto-launch', '--reserve-vram', '1'],
+    // --disable-pinned-memory: pinned RAM cannot be paged out, and with 16 GB of RAM the two
+    // 10.8 GB experts already push Windows into the pagefile; it does not change the result
+    ['-u', '-s', 'ComfyUI/main.py', '--windows-standalone-build', '--listen', '127.0.0.1', '--port', '8188', '--disable-auto-launch', '--reserve-vram', '1', '--disable-pinned-memory'],
     { cwd: COMFY_DIR, stdio: ['ignore', out, out], env: { ...process.env, PYTHONUNBUFFERED: '1' } },
   );
   for (let i = 0; i < 180; i++) {
