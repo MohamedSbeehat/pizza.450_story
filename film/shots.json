@@ -1,27 +1,55 @@
 {
   "space": "zerogpu-aoti/wan2-2-fp8da-aoti-faster",
-  "negative": "cartoon, CGI, 3D render, plastic look, deformed hands, extra fingers, fused fingers, warped or melting objects, text, watermark, logo, subtitles, oversaturated colors, blur, flicker, jump cuts, fast shaky camera",
+  "style": "Photorealistic cinematic footage, the same warm golden lighting, the same white marble table, hands and artisan pizzeria kitchen throughout, close-up macro lens with shallow depth of field and a softly blurred background, slow smooth camera movement, real textures and real-world physics.",
+  "negative": "deformed hands, extra fingers, fused fingers, malformed hands, text, watermark, logo, subtitles, distortion, warped or melting objects, flicker, washed-out colors, oversaturated colors, cartoon, CGI, 3D render, plastic look, jump cuts, fast shaky camera",
+  "dissolve": 0.375,
+  "local": {
+    "comfyui": "C:/ai-cache/ComfyUI_windows_portable",
+    "high": "Wan2.2-I2V-A14B-HighNoise-Q5_K_M.gguf",
+    "low": "Wan2.2-I2V-A14B-LowNoise-Q5_K_M.gguf",
+    "lora": "lightx2v_I2V_14B_480p_cfg_step_distill_rank128_bf16.safetensors",
+    "loraHigh": 3,
+    "loraLow": 1,
+    "textEncoder": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+    "vae": "wan_2.1_vae.safetensors",
+    "width": 832,
+    "height": 624,
+    "fps": 16,
+    "steps": 6,
+    "highSteps": 2,
+    "shift": 3,
+    "sampler": "uni_pc_bh2",
+    "scheduler": "simple",
+    "cfg": 1
+  },
   "shots": [
     {
       "id": "dough",
       "file": "01-dough.mp4",
-      "note": "Already made (hands knead the dough ball on floured marble)."
+      "trim": [0, 3.5],
+      "note": "Already made (hands knead the dough ball on floured marble). The last 1.5 s are cut: the flour turns into fur there."
     },
     {
       "id": "stretch",
       "file": "02-stretch.mp4",
       "start": "keys/stretch.jpg",
+      "crop": [90, 104, 630, 472],
+      "focus": { "x": 0.55, "y": 0.66, "rx": 0.56, "ry": 0.6, "blur": 7 },
       "seconds": 5,
       "seed": 451,
-      "prompt": "High-angle close-up. The hands stretch the dough outward on the floured marble, turning it a little with each move, forming a thin round base with a soft, puffy rim. The dough is supple and slightly translucent in the light. Slow, smooth orbit around the dough. Setting: a warm artisan pizzeria kitchen — white marble counter dusted with flour, white painted brick wall, light oak shelves, brass cone pendant lamps, and a copper-domed wood-fired oven glowing softly in the background. Style: photorealistic cinematic food commercial, shot on ARRI Alexa with a 50mm macro lens, shallow depth of field, creamy bokeh, warm golden practical light, natural colors, real-world physics, subtle film grain, 24fps. One continuous shot, no cuts, no text, no music."
+      "prompt": "High-angle close-up of a pizzaiolo's hands giving the final shape to a round Neapolitan pizza base on a floured white marble counter. The base is already stretched: the hands turn it a little with each move and gently press and even out the puffy rim with the fingertips, so the edge becomes perfectly round and even. The dough is soft, supple and slightly translucent in the light. Slow, subtle push-in.",
+      "details": "Real details: a light dusting of flour drifting in the warm light."
     },
     {
       "id": "sauce",
       "file": "03-sauce.mp4",
       "start": "keys/sauce.jpg",
+      "crop": [46, 0, 676, 507],
+      "focus": { "x": 0.53, "y": 0.56, "rx": 0.52, "ry": 0.66, "blur": 7 },
       "seconds": 5,
       "seed": 455,
-      "prompt": "Top-down close-up. A stainless steel ladle pours thick, glossy red tomato sauce onto the center of the bare dough, then the back of the ladle spreads it outward in a slow, steady spiral, leaving the rim clean. Tiny bits of tomato catch the light. Slow push-in. Setting: a warm artisan pizzeria kitchen — white marble counter dusted with flour, white painted brick wall, light oak shelves, brass cone pendant lamps, and a copper-domed wood-fired oven glowing softly in the background. Style: photorealistic cinematic food commercial, shot on ARRI Alexa with a 50mm macro lens, shallow depth of field, creamy bokeh, warm golden practical light, natural colors, real-world physics, subtle film grain, 24fps. One continuous shot, no cuts, no text, no music."
+      "prompt": "Three-quarter high-angle close-up. A stainless steel ladle pours thick, glossy red tomato sauce onto the centre of the round pizza base on the floured marble counter, then the back of the ladle spreads the sauce outward in slow, steady circles, leaving a clean rim of dough. The sauce is rich and catches the warm light. Slow, steady camera.",
+      "details": "Real details: glossy sauce, fine flour dust on the marble."
     },
     {
       "id": "cheese",
@@ -29,31 +57,45 @@
       "startFromLastFrameOf": "03-sauce.mp4",
       "seconds": 5,
       "seed": 456,
-      "prompt": "Close-up, slow motion. Hands tear fresh white mozzarella into soft pieces — milky strands stretch as it tears — and place them one by one onto the red sauce. The cheese is moist and glistening. Slow push-in. Setting: a warm artisan pizzeria kitchen — white marble counter dusted with flour, white painted brick wall, light oak shelves, brass cone pendant lamps, and a copper-domed wood-fired oven glowing softly in the background. Style: photorealistic cinematic food commercial, shot on ARRI Alexa with a 50mm macro lens, shallow depth of field, creamy bokeh, warm golden practical light, natural colors, real-world physics, subtle film grain, 24fps. One continuous shot, no cuts, no text, no music."
+      "prompt": "The same three-quarter close-up. The ladle lifts out of frame, and a pizzaiolo's hands place torn pieces of fresh white mozzarella one by one onto the red tomato sauce; the soft, milky cheese stretches into strands as it is pulled apart. The mozzarella is moist and glistening. Slow, steady camera.",
+      "details": "Real details: cheese stretching into milky strands, glossy sauce."
     },
     {
       "id": "oven",
       "file": "05-oven.mp4",
-      "start": "keys/oven.jpg",
-      "seconds": 3,
-      "seed": 452,
-      "prompt": "The camera slowly pushes toward the glowing mouth of the copper-domed wood-fired oven. Flames lick the inside of the dome, orange firelight flickers across the hammered copper surface, a few embers float upward. Steady, smooth camera. Setting: a warm artisan pizzeria kitchen — white marble counter dusted with flour, white painted brick wall, light oak shelves, brass cone pendant lamps, and a copper-domed wood-fired oven glowing softly in the background. Style: photorealistic cinematic food commercial, shot on ARRI Alexa with a 50mm macro lens, shallow depth of field, creamy bokeh, warm golden practical light, natural colors, real-world physics, subtle film grain, 24fps. One continuous shot, no cuts, no text, no music."
+      "note": "Already made from keys/oven.jpg (the real copper oven), seed 452, on the Hugging Face Space."
     },
     {
       "id": "bake",
       "file": "06-bake.mp4",
       "start": "keys/bake.jpg",
+      "crop": [58, 60, 653, 490],
       "seconds": 5,
       "seed": 453,
-      "prompt": "Inside the wood-fired oven at pizza level, locked-off macro shot with a time-lapse feel: the crust rises and blisters, turning golden with dark leopard spots; the mozzarella melts, bubbles and flows into the sauce; flames roll across the dome above. Setting: a warm artisan pizzeria kitchen — white marble counter dusted with flour, white painted brick wall, light oak shelves, brass cone pendant lamps, and a copper-domed wood-fired oven glowing softly in the background. Style: photorealistic cinematic food commercial, shot on ARRI Alexa with a 50mm macro lens, shallow depth of field, creamy bokeh, warm golden practical light, natural colors, real-world physics, subtle film grain, 24fps. One continuous shot, no cuts, no text, no music."
+      "style": "Photorealistic cinematic footage, warm firelight, close-up macro lens with shallow depth of field, slow smooth camera movement, real textures and real-world physics.",
+      "prompt": "Inside a wood-fired oven, low close-up at the level of the oven floor. The pizza bakes: the mozzarella melts, bubbles and spreads into the red sauce, the already charred crust puffs up a little more, and the flames flicker and roll over the burning logs behind it. Locked-off camera with a gentle time-lapse feel.",
+      "details": "Real details: cheese melting and bubbling, puffed charred crust edges, wood-fired oven flames."
+    },
+    {
+      "id": "out",
+      "file": "07-out.mp4",
+      "startFromLastFrameOf": "06-bake.mp4",
+      "seconds": 4,
+      "seed": 457,
+      "style": "Photorealistic cinematic footage, warm firelight, close-up macro lens with shallow depth of field, slow smooth camera movement, real textures and real-world physics.",
+      "prompt": "A long-handled metal pizza peel slides in under the baked pizza and slowly draws it out of the wood-fired oven toward the camera, and the camera eases back with it. The crust is puffed and charred, the cheese still bubbling, the flames flicker behind.",
+      "details": "Real details: puffed charred crust edges, bubbling cheese, wood-fired oven flames."
     },
     {
       "id": "finish",
-      "file": "07-finish.mp4",
-      "start": "keys/finish.jpg",
+      "file": "08-finish.mp4",
+      "start": "../photo/pizza.png",
+      "crop": [42, 252, 672, 504],
       "seconds": 4,
       "seed": 454,
-      "prompt": "Hero shot. Very slow push-in on the freshly baked margherita: gentle steam rises from the melted mozzarella, the cheese and a touch of olive oil glisten, the charred rim shows its texture, fresh basil leaves rest on top. Warm golden sunlight, shallow depth of field. Setting: a warm artisan pizzeria kitchen — white marble counter dusted with flour, white painted brick wall, light oak shelves, brass cone pendant lamps, and a copper-domed wood-fired oven glowing softly in the background. Style: photorealistic cinematic food commercial, shot on ARRI Alexa with a 50mm macro lens, shallow depth of field, creamy bokeh, warm golden practical light, natural colors, real-world physics, subtle film grain, 24fps. One continuous shot, no cuts, no text, no music."
+      "style": "Photorealistic cinematic footage, warm golden light, close-up macro lens with shallow depth of field, slow smooth camera movement, real textures and real-world physics.",
+      "prompt": "Hero close-up of the freshly baked Neapolitan margherita in its kraft pizza box. Gentle wisps of steam rise from the hot melted mozzarella, the cheese and a touch of olive oil glisten, fresh basil leaves rest on top, and the charred, puffy crust shows its texture. Very slow push-in; everything else stays still.",
+      "details": "Real details: steam, glistening melted cheese, puffed charred crust edges."
     }
   ]
 }

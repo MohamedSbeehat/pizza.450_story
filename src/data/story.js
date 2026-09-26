@@ -130,8 +130,9 @@ export const BUILD = {
 /* ───────────────────── Scene 5 — البيتزا (3D) ───────────────────── */
 
 export const PIZZA = {
-  // Long on purpose: the making of the pizza plays like a short food film.
-  duration: 10,
+  // Long on purpose: the making of the pizza plays like a short food film
+  // (10 screens), then it settles on the finished pizza with the logo (2 more).
+  duration: 12,
   // `text` = the big words on screen, `label` = the small checklist entry.
   steps: [
     { id: 'dough', no: '01', label: 'العجين', text: 'العجين...' },
@@ -147,31 +148,43 @@ export const PIZZA = {
     cheese: 'جبنة طازجة',
     grated: 'جبنة مبشورة',
     basil: 'ريحان طازج',
+    oven: '450°', // film only: at the mouth of the copper oven
   },
   // ── The film ─────────────────────────────────────────────────────
-  // A real-looking video of the pizza being made, scrubbed by the scroll.
+  // A real-looking film of the pizza being made, scrubbed by the scroll.
   // Made from the clips in /film with `npm run film` (see README); without
   // it, the 3D version above plays.
   //   clips  `at` = [from, to] in screens of this scene, per clip id
-  //   tags   where each ingredient label points, as a fraction of the video
-  //          frame (x from the left, y from the top), and when it shows
+  //   tags   where each label points, as a fraction of the film frame
+  //          (x from the left, y from the top), and when it shows
   film: {
     clips: [
       { id: 'dough', at: [0.05, 1.2] },
-      { id: 'stretch', at: [1.2, 2.2] },
-      { id: 'sauce', at: [2.2, 4.2] },
-      { id: 'cheese', at: [4.2, 6.0] },
-      { id: 'oven', at: [6.0, 6.8] },
-      { id: 'bake', at: [6.8, 8.6] },
-      { id: 'finish', at: [8.6, 9.95] },
+      { id: 'stretch', at: [1.2, 2.3] },
+      { id: 'sauce', at: [2.3, 3.9] },
+      { id: 'cheese', at: [3.9, 5.5] },
+      { id: 'oven', at: [5.5, 6.3] },
+      { id: 'bake', at: [6.3, 7.9] },
+      { id: 'out', at: [7.9, 8.9] },
+      { id: 'finish', at: [8.9, 10.3] },
     ],
     tags: {
-      flour: { at: [0.5, 1.3], x: 0.5, y: 0.62 },
-      sauce: { at: [2.6, 3.3], x: 0.5, y: 0.55 },
-      cheese: { at: [4.5, 5.2], x: 0.5, y: 0.55 },
-      grated: { at: [8.85, 9.35], x: 0.56, y: 0.42 },
-      basil: { at: [9.3, 9.8], x: 0.4, y: 0.55 },
+      flour: { at: [0.35, 1.1], x: 0.55, y: 0.82 },
+      sauce: { at: [2.75, 3.6], x: 0.52, y: 0.62 },
+      cheese: { at: [4.5, 5.3], x: 0.5, y: 0.6 },
+      oven: { at: [5.6, 6.2], x: 0.6, y: 0.8 },
+      grated: { at: [9.15, 9.8], x: 0.47, y: 0.47 },
+      basil: { at: [9.45, 10.15], x: 0.55, y: 0.36 },
     },
+  },
+  // ── The ending ───────────────────────────────────────────────────
+  // The finished pizza settles, then the logo, a line and the buttons.
+  // `buttons` = keys of LINKS; a link that is still '#' is left out, and the
+  // first real one is the highlighted button (so once LINKS.contact gets a
+  // WhatsApp link, it leads).
+  ending: {
+    line: 'بيتزا نابوليتانية من فرن الحطب... *قريبًا* بين يديك.',
+    buttons: ['contact', 'instagram', 'location'],
   },
 };
 

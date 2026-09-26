@@ -2,3 +2,5 @@ node_modules
 dist
 shots
 *.log
+# pizza film: every generated take + start frames (npm run film:generate:local)
+film/takes/

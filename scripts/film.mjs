@@ -1,102 +1,164 @@
 /**
- * The pizza film: video clips → one scroll-scrubbed video.
+ * The pizza film: the clips in /film → one graded film, scrubbed by the scroll.
  *
- * Put the clips in /film, named in order, e.g.
- *     film/01-dough.mp4  film/02-sauce.mp4  …  film/06-finish.mp4
- * (the part after the number is the clip id used in PIZZA.film in
- * src/data/story.js), then run:
+ * The order, trims and the dissolve between shots come from film/shots.json
+ * (a shot whose clip is missing is left out). Run:
  *     npm run film
  *
- * Writes:
- *   public/video/pizza-film.mp4    all clips, one after the other (H.264,
- *                                  a keyframe every 4 frames → cheap seeks)
- *   public/video/pizza-film.webp   the first frame (poster)
- *   src/data/pizza.film.json       size, fps and where each clip starts/ends
+ * Every clip is trimmed, resized to the film size, given the same colour
+ * grade (warm, the page's coal black, gentle contrast — see GRADE), and joined
+ * to the next one with a short dissolve. The film is then written as single
+ * WebP frames, packed into a few files, in two sizes:
+ *
+ *   public/video/pizza-film/desktop/*.bin   832×624
+ *   public/video/pizza-film/mobile/*.bin    576×432
+ *   public/video/pizza-film/{desktop,mobile}.webp   poster (first frame)
+ *   src/data/pizza.film.json                sizes, packs, where each clip sits
+ *
+ * Pack «k» holds every 8th frame of the whole film: it loads first, so the
+ * film can be scrubbed end to end almost at once; the other packs fill in the
+ * frames in between (see src/components/ScrollFilm/ScrollFilm.jsx).
  */
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
-import ffmpegStatic from 'ffmpeg-static';
-import sharp from 'sharp';
 
-// the bundled binary, else FFMPEG_PATH, else ffmpeg from the system
-const ffmpeg = process.env.FFMPEG_PATH || (ffmpegStatic && existsSync(ffmpegStatic) ? ffmpegStatic : 'ffmpeg');
-
+const ffmpeg = process.env.FFMPEG_PATH || 'ffmpeg';
 const ROOT = path.resolve(import.meta.dirname, '..');
 const SRC = path.join(ROOT, 'film');
-const OUT = path.join(ROOT, 'public/video');
-const NAME = 'pizza-film';
-const FPS = 16; // Wan 2.2 renders at 16 fps
+const OUT = path.join(ROOT, 'public/video/pizza-film');
+const plan = JSON.parse(readFileSync(path.join(SRC, 'shots.json'), 'utf8'));
 
-const clips = readdirSync(SRC)
-  .filter((f) => /\.(mp4|webm|mov)$/i.test(f))
-  .sort()
-  .map((f) => ({ file: path.join(SRC, f), id: f.replace(/\.[^.]+$/, '').replace(/^\d+[-_ ]*/, '') }));
-if (!clips.length) throw new Error(`No clips in ${SRC}`);
+const FPS = plan.local?.fps ?? 16; // Wan 2.2 renders at 16 fps
+const DISSOLVE = Math.max(0, Math.round((plan.dissolve ?? 0.375) * FPS)); // in frames
+const KEY_EVERY = 8; // pack «k»: every 8th frame
+const PACK = 48; // frames per pack after that
+const VARIANTS = {
+  desktop: { width: 832, height: 624, quality: 72 },
+  mobile: { width: 576, height: 432, quality: 64 },
+};
+const [WIDTH, HEIGHT] = [VARIANTS.desktop.width, VARIANTS.desktop.height];
 
-/** Pixel size of a clip. */
-function sizeOf(file) {
-  const r = spawnSync(ffmpeg, ['-hide_banner', '-i', file], { encoding: 'utf8' });
-  const m = r.stderr.match(/Video:.*?(\d{2,5})x(\d{2,5})/);
-  if (!m) throw new Error(`Could not read ${file}`);
-  return [Number(m[1]), Number(m[2])];
+/**
+ * One grade for every clip: blacks lifted to the page's coal (#0B0907),
+ * highlights warmed toward the logo's parchment, a gentle S-curve, slightly
+ * less saturation and greens pushed toward olive. `grade` in shots.json adds
+ * a per-clip correction before it (e.g. the oven clip's cool shadows).
+ */
+const GRADE = [
+  "curves=interp=pchip:r='0/0.043 0.25/0.235 0.5/0.52 0.75/0.79 1/1':g='0/0.035 0.25/0.22 0.5/0.5 0.75/0.765 1/0.975':b='0/0.027 0.25/0.2 0.5/0.46 0.75/0.72 1/0.92'",
+  'eq=saturation=0.9',
+  "selectivecolor=correction_method=relative:greens='0 0.08 0.06 0'",
+].join(',');
+
+const run = (args, opts) => execFileSync(ffmpeg, ['-hide_banner', '-loglevel', 'error', '-y', ...args], { stdio: 'inherit', ...opts });
+
+const clips = plan.shots
+  .map((s) => ({ ...s, path: path.join(SRC, s.file) }))
+  .filter((s) => {
+    if (existsSync(s.path)) return true;
+    console.warn(`(missing, left out) film/${s.file}`);
+    return false;
+  });
+if (!clips.length) throw new Error('No clips in /film');
+
+/** The filter that turns input `i` into a graded, trimmed clip at the film size. */
+function clipFilter(c, i) {
+  const trim = c.trim ? `trim=start=${c.trim[0]}:end=${c.trim[1]},` : '';
+  const fit = `scale=${WIDTH}:${HEIGHT}:force_original_aspect_ratio=increase:flags=lanczos,crop=${WIDTH}:${HEIGHT},setsar=1`;
+  return `[${i}:v]${trim}setpts=PTS-STARTPTS,fps=${FPS},${fit},${c.grade ? c.grade + ',' : ''}${GRADE},format=yuv420p,settb=1/${FPS}`;
 }
-// Output size = the first clip's size (or FILM_SIZE=1024x768); the other
-// clips are scaled and cropped to fit it.
-const [WIDTH, HEIGHT] = process.env.FILM_SIZE ? process.env.FILM_SIZE.split('x').map(Number) : sizeOf(clips[0].file);
 
-/** Exact number of frames a clip has once resampled to FPS. */
-function frameCount(file) {
-  const r = spawnSync(ffmpeg, ['-hide_banner', '-i', file, '-vf', `fps=${FPS}`, '-map', '0:v', '-f', 'null', '-'], { encoding: 'utf8' });
+/** Exact number of frames a clip has after trim + resample. */
+function frameCount(c) {
+  const r = spawnSync(ffmpeg, ['-hide_banner', '-i', c.path, '-filter_complex', clipFilter(c, 0) + '[v]', '-map', '[v]', '-f', 'null', '-'], { encoding: 'utf8' });
   const m = [...r.stderr.matchAll(/frame=\s*(\d+)/g)].pop();
-  if (!m) throw new Error(`Could not read ${file}`);
+  if (!m) throw new Error(`Could not read ${c.file}:\n${r.stderr.slice(-800)}`);
   return Number(m[1]);
 }
 
+// ── Timing: clip i starts where the previous one's dissolve begins ──────
 let cursor = 0;
+for (const [i, c] of clips.entries()) {
+  c.frames = frameCount(c);
+  c.start = i === 0 ? 0 : cursor - DISSOLVE;
+  cursor = c.start + c.frames;
+}
+const FRAMES = cursor;
 const timing = {};
-for (const c of clips) {
-  c.frames = frameCount(c.file);
-  timing[c.id] = { from: +(cursor / FPS).toFixed(4), to: +((cursor + c.frames) / FPS).toFixed(4) };
-  cursor += c.frames;
-  console.log(`${c.id.padEnd(10)} ${String(c.frames).padStart(4)} frames`);
+for (const [i, c] of clips.entries()) {
+  // the scroll hands over from one clip to the next in the middle of their dissolve
+  const from = i === 0 ? 0 : c.start + DISSOLVE / 2;
+  const to = i === clips.length - 1 ? FRAMES : clips[i + 1].start + DISSOLVE / 2;
+  timing[c.id] = { from: +(from / FPS).toFixed(4), to: +(to / FPS).toFixed(4) };
+  console.log(`${c.id.padEnd(8)} ${String(c.frames).padStart(4)} frames  ${timing[c.id].from.toFixed(2)}–${timing[c.id].to.toFixed(2)} s`);
 }
 
-mkdirSync(OUT, { recursive: true });
-const fit = `scale=${WIDTH}:${HEIGHT}:force_original_aspect_ratio=increase:flags=lanczos,crop=${WIDTH}:${HEIGHT},fps=${FPS},setsar=1,format=yuv420p`;
-const filter =
-  clips.map((c, i) => `[${i}:v]${fit}[v${i}]`).join(';') + ';' + clips.map((c, i) => `[v${i}]`).join('') + `concat=n=${clips.length}:v=1:a=0[out]`;
-const mp4 = path.join(OUT, `${NAME}.mp4`);
-execFileSync(
-  ffmpeg,
-  [
-    '-hide_banner', '-loglevel', 'error', '-y',
-    ...clips.flatMap((c) => ['-i', c.file]),
-    '-filter_complex', filter, '-map', '[out]', '-an',
-    '-c:v', 'libx264', '-preset', 'slow', '-crf', '21', '-profile:v', 'high',
-    '-g', '4', '-keyint_min', '4', '-sc_threshold', '0', '-bf', '0',
-    '-movflags', '+faststart',
-    mp4,
-  ],
-  { stdio: 'inherit' },
-);
+// ── Master: all clips graded and dissolved into one lossless file ───────
+const work = mkdtempSync(path.join(tmpdir(), 'pizza-film-'));
+const master = path.join(work, 'master.mkv');
+{
+  const parts = clips.map((c, i) => `${clipFilter(c, i)}[c${i}]`);
+  let last = 'c0';
+  for (let i = 1; i < clips.length; i++) {
+    const out = i === clips.length - 1 ? 'out' : `x${i}`;
+    parts.push(
+      DISSOLVE
+        ? `[${last}][c${i}]xfade=transition=fade:duration=${DISSOLVE / FPS}:offset=${clips[i].start / FPS}[${out}]`
+        : `[${last}][c${i}]concat=n=2:v=1:a=0[${out}]`,
+    );
+    last = out;
+  }
+  if (clips.length === 1) parts.push('[c0]null[out]');
+  run([...clips.flatMap((c) => ['-i', c.path]), '-filter_complex', parts.join(';'), '-map', '[out]', '-an', '-c:v', 'ffv1', '-level', '3', master]);
+}
 
-// poster = first frame
-const png = execFileSync(ffmpeg, ['-hide_banner', '-loglevel', 'error', '-i', mp4, '-frames:v', '1', '-f', 'image2pipe', '-vcodec', 'png', '-'], {
-  maxBuffer: 64 * 1024 * 1024,
-});
-await sharp(png).webp({ quality: 80 }).toFile(path.join(OUT, `${NAME}.webp`));
+// ── Frames → WebP → packs, per size ──────────────────────────────────
+rmSync(OUT, { recursive: true, force: true });
+const variants = {};
+let totalBytes = 0;
+for (const [name, v] of Object.entries(VARIANTS)) {
+  const dir = path.join(work, name);
+  mkdirSync(dir, { recursive: true });
+  run([
+    '-i', master, '-vf', `scale=${v.width}:${v.height}:flags=lanczos`,
+    '-c:v', 'libwebp', '-quality', String(v.quality), '-compression_level', '6', '-preset', 'photo',
+    '-start_number', '0', path.join(dir, '%04d.webp'),
+  ]);
+  const files = readdirSync(dir).filter((f) => f.endsWith('.webp')).sort();
+  if (files.length !== FRAMES) console.warn(`${name}: ${files.length} frames written, expected ${FRAMES}`);
+
+  const outDir = path.join(OUT, name);
+  mkdirSync(outDir, { recursive: true });
+  const groups = [{ id: 'k', frames: files.map((_, i) => i).filter((i) => i % KEY_EVERY === 0) }];
+  const rest = files.map((_, i) => i).filter((i) => i % KEY_EVERY !== 0);
+  for (let i = 0; i < rest.length; i += PACK) groups.push({ id: String(groups.length - 1).padStart(2, '0'), frames: rest.slice(i, i + PACK) });
+
+  const packs = groups.map((g) => {
+    const bufs = g.frames.map((i) => readFileSync(path.join(dir, files[i])));
+    const file = path.join(outDir, `${g.id}.bin`);
+    writeFileSync(file, Buffer.concat(bufs));
+    return { src: `/video/pizza-film/${name}/${g.id}.bin`, frames: g.frames, sizes: bufs.map((b) => b.length) };
+  });
+  copyFileSync(path.join(dir, files[0]), path.join(OUT, `${name}.webp`));
+  const bytes = packs.reduce((s, p) => s + p.sizes.reduce((a, b) => a + b, 0), 0);
+  totalBytes += bytes;
+  variants[name] = { width: v.width, height: v.height, poster: `/video/pizza-film/${name}.webp`, bytes, packs };
+  console.log(`${name.padEnd(8)} ${v.width}×${v.height}  ${(bytes / 1e6).toFixed(1)} MB in ${packs.length} packs`);
+}
+rmSync(work, { recursive: true, force: true });
 
 const manifest = {
-  src: `/video/${NAME}.mp4`,
-  poster: `/video/${NAME}.webp`,
+  kind: 'frames',
   width: WIDTH,
   height: HEIGHT,
   fps: FPS,
-  frames: cursor,
-  duration: +(cursor / FPS).toFixed(4),
+  frames: FRAMES,
+  duration: +(FRAMES / FPS).toFixed(4),
+  keyEvery: KEY_EVERY,
   clips: timing,
+  variants,
 };
-writeFileSync(path.join(ROOT, 'src/data/pizza.film.json'), JSON.stringify(manifest, null, 2) + '\n');
-const { size } = await import('node:fs').then((fs) => fs.statSync(mp4));
-console.log(`\n${cursor} frames, ${(cursor / FPS).toFixed(1)} s, ${(size / 1e6).toFixed(1)} MB → ${path.relative(ROOT, mp4)}`);
+writeFileSync(path.join(ROOT, 'src/data/pizza.film.json'), JSON.stringify(manifest) + '\n');
+console.log(`\n${FRAMES} frames, ${(FRAMES / FPS).toFixed(1)} s, ${(totalBytes / 1e6).toFixed(1)} MB in total → public/video/pizza-film/`);

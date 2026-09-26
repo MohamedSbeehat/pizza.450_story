@@ -87,3 +87,131 @@
 .pizza__film.is-off {
   display: none;
 }
+
+/* ── The ending: the finished pizza settles, then logo + buttons ─── */
+.pizza__shade {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(11, 9, 7, 0.35) 0%, rgba(11, 9, 7, 0.78) 100%),
+    linear-gradient(0deg, rgba(11, 9, 7, 0.55), rgba(11, 9, 7, 0) 45%);
+}
+.pizza__ending {
+  position: absolute;
+  inset: var(--bar) var(--gutter);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 1.4vh, 0.95rem);
+  text-align: center;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+.pizza__logo {
+  position: relative;
+  width: clamp(76px, 7.5vw, 116px);
+  aspect-ratio: 1;
+  opacity: 0;
+  visibility: hidden;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.55));
+}
+.pizza__logo .media {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+}
+.pizza__title {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.pizza__descriptor {
+  margin: 0;
+  color: var(--gold);
+  font-size: clamp(1rem, 1.3vw, 1.3rem);
+  opacity: 0;
+  visibility: hidden;
+}
+.pizza__line {
+  margin: 0.2rem 0 0;
+  max-width: 34ch;
+}
+.pizza__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.7rem;
+  margin-top: 0.5rem;
+  pointer-events: auto;
+}
+.pizza__actions > * {
+  opacity: 0;
+  visibility: hidden;
+}
+.pizza__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.8rem 1.35rem;
+  border: 1px solid rgba(241, 230, 208, 0.28);
+  border-radius: 999px;
+  background: rgba(11, 9, 7, 0.45);
+  color: var(--cream);
+  font-size: 0.98rem;
+  text-decoration: none;
+  text-shadow: none;
+  transition:
+    border-color 0.3s,
+    background 0.3s,
+    transform 0.3s var(--ease-film);
+}
+.pizza__btn:hover {
+  border-color: var(--amber);
+  background: rgba(232, 137, 43, 0.14);
+}
+.pizza__btn:active {
+  transform: scale(0.97);
+}
+.pizza__btn:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+.pizza__btn.is-primary {
+  border-color: transparent;
+  background: linear-gradient(135deg, #f3ad58, #d9772f);
+  color: #1a0f08;
+  font-weight: 500;
+  box-shadow: 0 10px 34px rgba(217, 119, 47, 0.35);
+}
+.pizza__btn.is-primary:hover {
+  background: linear-gradient(135deg, #f7bd70, #e2843a);
+}
+.pizza__btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 820px) {
+  .pizza__logo {
+    width: 64px;
+  }
+  .pizza__ending {
+    justify-content: flex-end;
+    padding-bottom: 3vh;
+  }
+  .pizza__btn {
+    padding: 0.72rem 1.1rem;
+    font-size: 0.92rem;
+  }
+}

@@ -6,7 +6,7 @@
   overflow: hidden;
   background: #0b0806;
 }
-.scroll-film__video,
+.scroll-film__frames,
 .scroll-film__poster {
   position: absolute;
   inset: 0;
@@ -14,12 +14,12 @@
   height: 100%;
   object-fit: cover;
 }
-/* the poster (first frame) holds the place until the video has data */
-.scroll-film__video {
+/* the poster (first frame) holds the place until the first frame is drawn */
+.scroll-film__frames {
   opacity: 0;
   transition: opacity 0.4s ease;
 }
-.scroll-film.is-ready .scroll-film__video {
+.scroll-film.is-ready .scroll-film__frames {
   opacity: 1;
 }
 
@@ -27,7 +27,7 @@
    shown at 150% of the screen width (a third is cropped at the sides) and
    fades into the dark at the top and bottom. */
 @media (max-aspect-ratio: 4 / 5) {
-  .scroll-film__video,
+  .scroll-film__frames,
   .scroll-film__poster {
     inset: auto;
     top: 50%;
