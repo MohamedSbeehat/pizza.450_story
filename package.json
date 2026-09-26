@@ -11,6 +11,7 @@
     "images": "node scripts/optimize-images.mjs",
     "shots": "node scripts/shots.mjs",
     "film": "node scripts/film.mjs",
+    "film:video": "node scripts/film-video.mjs",
     "film:generate": "node scripts/film-generate.mjs",
     "film:generate:local": "node scripts/film-generate-local.mjs"
   },

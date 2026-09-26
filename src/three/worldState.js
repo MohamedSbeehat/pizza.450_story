@@ -87,7 +87,6 @@ export const WORLD_INITIAL = JSON.parse(JSON.stringify(world));
 
 const [px, py, pz] = LAYOUT.prep;
 const [sx, sy, sz] = LAYOUT.serve;
-const T = LAYOUT.tables.find((t) => t.first);
 const O = LAYOUT.oven;
 const [bx, bz] = PIZZA_SET.bowl;
 const [mx, mz] = PIZZA_SET.mozzarella;
@@ -122,8 +121,4 @@ export const SHOTS = {
   heroOrbitA: { x: sx - 0.55, y: sy + 0.42, z: sz + 0.5, tx: sx, ty: sy + 0.03, tz: sz, fov: 34 },
   heroOrbitB: { x: sx + 0.62, y: sy + 0.36, z: sz + 0.38, tx: sx, ty: sy + 0.03, tz: sz, fov: 34 },
   heroClose: { x: sx + 0.2, y: sy + 0.2, z: sz + 0.26, tx: sx - 0.02, ty: sy + 0.03, tz: sz - 0.02, fov: 32 },
-
-  // Scene 6 — the first table
-  tableClose: { x: T.x + 1.0, y: 1.42, z: T.z + 1.25, tx: T.x, ty: LAYOUT.tableTop + 0.04, tz: T.z, fov: 36 },
-  roomWide: { x: -4.6, y: 3.3, z: 8.4, tx: 0.6, ty: 1.2, tz: -1.2, fov: 40 },
 };

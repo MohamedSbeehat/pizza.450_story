@@ -1,10 +1,13 @@
 /**
  * Shared by the two pizza-film generators (film-generate.mjs on the hosted
  * Hugging Face GPU, film-generate-local.mjs on this computer), so a shot is
- * prepared and prompted exactly the same way on both.
+ * prepared and prompted exactly the same way on both — and, with writeFilm,
+ * by the two scripts that turn a film into frames for the scroll (film.mjs,
+ * film-video.mjs).
  */
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import ffmpegStatic from 'ffmpeg-static';
 import sharp from 'sharp';
@@ -88,4 +91,79 @@ export async function startFrame(shot, filmDir, W, H) {
     .png()
     .toBuffer();
   return sharp(base).blur(blur).composite([{ input: sharpPart }]).png().toBuffer();
+}
+
+const KEY_EVERY = 8; // pack «k»: every 8th frame
+const PACK = 48; // frames per pack after that
+
+/**
+ * The last step of every film (film.mjs: the AI clips, film-video.mjs: your
+ * own video): a lossless master → single WebP frames, packed into a few
+ * files, per size, and the manifest the site reads.
+ *
+ *   public/video/pizza-film/<size>/*.bin    the frames, packed
+ *   public/video/pizza-film/<size>.webp     poster (first frame)
+ *   src/data/pizza.film.json                sizes, packs, where each clip sits
+ *
+ * Pack «k» holds every 8th frame of the whole film: it loads first, so the
+ * film can be scrubbed end to end almost at once; the other packs fill in the
+ * frames in between (see src/components/ScrollFilm/ScrollFilm.jsx).
+ *
+ * `clips` = { id: { from, to } } in seconds, `frame` = how the page frames
+ * the film (ScrollFilm, null = full screen), `threads` caps ffmpeg's threads.
+ */
+export function writeFilm({ root, master, frames, fps, variants, clips, frame = null, threads = 0 }) {
+  const out = path.join(root, 'public/video/pizza-film');
+  const work = mkdtempSync(path.join(tmpdir(), 'pizza-frames-'));
+  const limit = threads ? ['-threads', String(threads), '-filter_threads', String(threads)] : [];
+  const run = (args) => execFileSync(ffmpeg, ['-hide_banner', '-loglevel', 'error', '-y', ...args], { stdio: 'inherit' });
+
+  rmSync(out, { recursive: true, force: true });
+  const sizes = {};
+  let totalBytes = 0;
+  for (const [name, v] of Object.entries(variants)) {
+    const dir = path.join(work, name);
+    mkdirSync(dir, { recursive: true });
+    run([
+      ...limit, '-i', master, '-vf', `scale=${v.width}:${v.height}:flags=lanczos`,
+      '-c:v', 'libwebp', '-quality', String(v.quality), '-compression_level', '6', '-preset', 'photo',
+      '-start_number', '0', path.join(dir, '%04d.webp'),
+    ]);
+    const files = readdirSync(dir).filter((f) => f.endsWith('.webp')).sort();
+    if (files.length !== frames) console.warn(`${name}: ${files.length} frames written, expected ${frames}`);
+
+    const outDir = path.join(out, name);
+    mkdirSync(outDir, { recursive: true });
+    const groups = [{ id: 'k', frames: files.map((_, i) => i).filter((i) => i % KEY_EVERY === 0) }];
+    const rest = files.map((_, i) => i).filter((i) => i % KEY_EVERY !== 0);
+    for (let i = 0; i < rest.length; i += PACK) groups.push({ id: String(groups.length - 1).padStart(2, '0'), frames: rest.slice(i, i + PACK) });
+
+    const packs = groups.map((g) => {
+      const bufs = g.frames.map((i) => readFileSync(path.join(dir, files[i])));
+      writeFileSync(path.join(outDir, `${g.id}.bin`), Buffer.concat(bufs));
+      return { src: `/video/pizza-film/${name}/${g.id}.bin`, frames: g.frames, sizes: bufs.map((b) => b.length) };
+    });
+    copyFileSync(path.join(dir, files[0]), path.join(out, `${name}.webp`));
+    const bytes = packs.reduce((s, p) => s + p.sizes.reduce((a, b) => a + b, 0), 0);
+    totalBytes += bytes;
+    sizes[name] = { width: v.width, height: v.height, poster: `/video/pizza-film/${name}.webp`, bytes, packs };
+    console.log(`${name.padEnd(8)} ${v.width}×${v.height}  ${(bytes / 1e6).toFixed(1)} MB in ${packs.length} packs`);
+  }
+  rmSync(work, { recursive: true, force: true });
+
+  const [first] = Object.values(variants);
+  const manifest = {
+    kind: 'frames',
+    width: first.width,
+    height: first.height,
+    fps,
+    frames,
+    duration: +(frames / fps).toFixed(4),
+    keyEvery: KEY_EVERY,
+    clips,
+    ...(frame ? { frame } : {}),
+    variants: sizes,
+  };
+  writeFileSync(path.join(root, 'src/data/pizza.film.json'), JSON.stringify(manifest) + '\n');
+  console.log(`\n${frames} frames, ${(frames / fps).toFixed(1)} s, ${(totalBytes / 1e6).toFixed(1)} MB in total → public/video/pizza-film/`);
 }

@@ -15,7 +15,7 @@ const dwell = (r) => {
 };
 
 /**
- * Scene 7 — تطور المطعم
+ * Scene 6 — تطور المطعم
  * A faster montage: moments of the story on a curved film strip that turns
  * with the scroll (right → left, the way Arabic is read), with a timeline
  * underneath. Not a carousel: the scroll *is* the passing of time.

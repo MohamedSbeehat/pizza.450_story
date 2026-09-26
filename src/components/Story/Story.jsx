@@ -12,7 +12,6 @@ import { PeopleScene } from '../Scenes/PeopleScene/PeopleScene';
 import { PlaceScene } from '../Scenes/PlaceScene/PlaceScene';
 import { BuildScene } from '../Scenes/BuildScene/BuildScene';
 import { PizzaScene } from '../Scenes/PizzaScene/PizzaScene';
-import { FirstTableScene } from '../Scenes/FirstTableScene/FirstTableScene';
 import { GrowthScene } from '../Scenes/GrowthScene/GrowthScene';
 import { RevealScene } from '../Scenes/RevealScene/RevealScene';
 import { FinaleScene } from '../Scenes/FinaleScene/FinaleScene';
@@ -34,7 +33,6 @@ const SCENES = {
   place: PlaceScene,
   build: BuildScene,
   pizza: PizzaScene,
-  firstTable: FirstTableScene,
   growth: GrowthScene,
   reveal: RevealScene,
   finale: FinaleScene,

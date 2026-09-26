@@ -1,5 +1,6 @@
 /**
- * The pizza film made by `npm run film` (see scripts/film.mjs).
+ * The pizza film: your own video (`npm run film:video`, scripts/film-video.mjs)
+ * or the AI clips (`npm run film`, scripts/film.mjs), made into frames.
  * When the manifest does not exist yet, this is null and the pizza chapter
  * plays its 3D version.
  */

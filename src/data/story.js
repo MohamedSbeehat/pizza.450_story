@@ -151,36 +151,36 @@ export const PIZZA = {
     oven: '450°', // film only: at the mouth of the copper oven
   },
   // ── The film ─────────────────────────────────────────────────────
-  // A real-looking film of the pizza being made, scrubbed by the scroll.
-  // Made from the clips in /film with `npm run film` (see README); without
-  // it, the 3D version above plays.
+  // A film of the pizza being made, scrubbed by the scroll: your own video
+  // (film/video.json, `npm run film:video`) or the AI clips in /film
+  // (`npm run film`), see README; without it, the 3D version above plays.
   //   clips  `at` = [from, to] in screens of this scene, per clip id
   //   tags   where each label points, as a fraction of the film frame
   //          (x from the left, y from the top), and when it shows
   film: {
-    // false = the chapter plays as the designed 3D film (golden light in the
-    // dark); true = the AI video in public/video/pizza-film (npm run film).
-    useFilm: false,
-    // The kitchen light flickers and goes out as this clip starts; from here
-    // on the film is dark, lit only in gold (see film/shots.json → night).
-    lightsOut: 'sauce',
+    // true = the chapter plays the film in public/video/pizza-film (now your
+    // own video); false = the designed 3D version (golden light in the dark).
+    useFilm: true,
+    // The light flickers and goes out just before this clip, which then comes
+    // out of the dark (null = no lights-out).
+    lightsOut: 'finish',
+    // The steps of your video (where each starts: film/video.json → cuts).
+    // A short step over a long stretch of scroll plays in slow motion (the
+    // sauce, the falling cheese); the last one runs under the logo.
     clips: [
-      { id: 'dough', at: [0.05, 1.2] },
-      { id: 'stretch', at: [1.2, 2.3] },
-      { id: 'sauce', at: [2.3, 3.9] },
-      { id: 'cheese', at: [3.9, 5.5] },
-      { id: 'oven', at: [5.5, 6.3] },
-      { id: 'bake', at: [6.3, 7.9] },
-      { id: 'out', at: [7.9, 8.9] },
-      { id: 'finish', at: [8.9, 10.3] },
+      { id: 'dough', at: [0.05, 1.1] }, // the dough is tossed
+      { id: 'stretch', at: [1.1, 2.4] }, // stretched by hand in the flour
+      { id: 'sauce', at: [2.4, 3.9] },
+      { id: 'cheese', at: [3.9, 5.3] }, // mozzarella falls onto the sauce
+      { id: 'oven', at: [5.3, 6.8] }, // into the fire
+      { id: 'bake', at: [6.8, 8.6] }, // the cheese melts and bubbles
+      { id: 'finish', at: [8.6, 11.7] }, // the finished pizza, steaming
     ],
     tags: {
-      flour: { at: [0.35, 1.1], x: 0.55, y: 0.82 },
-      sauce: { at: [2.75, 3.6], x: 0.52, y: 0.62 },
-      cheese: { at: [4.5, 5.3], x: 0.5, y: 0.6 },
-      oven: { at: [5.6, 6.2], x: 0.6, y: 0.8 },
-      grated: { at: [9.15, 9.8], x: 0.47, y: 0.47 },
-      basil: { at: [9.45, 10.15], x: 0.55, y: 0.36 },
+      flour: { at: [1.25, 2.25], x: 0.22, y: 0.84 },
+      sauce: { at: [2.6, 3.7], x: 0.35, y: 0.72 },
+      cheese: { at: [4.35, 5.15], x: 0.55, y: 0.5 },
+      oven: { at: [5.55, 6.6], x: 0.52, y: 0.55 },
     },
   },
   // ── The ending ───────────────────────────────────────────────────
@@ -194,17 +194,7 @@ export const PIZZA = {
   },
 };
 
-/* ─────────────────── Scene 6 — أول تجربة (3D) ─────────────────── */
-
-export const FIRST_TABLE = {
-  duration: 3,
-  lines: ['ومن أول بيتزا...', 'بدأت الحكاية *تكبر*.'],
-  // Second beat, while the camera rises over the lit restaurant.
-  slate: { label: 'إلى أول زبون' },
-  promise: ['صُنعت بحب...', 'ومن أجلك *خصيصًا*.'],
-};
-
-/* ─────────────────── Scene 7 — تطور المطعم ─────────────────── */
+/* ─────────────────── Scene 6 — تطور المطعم ─────────────────── */
 
 export const GROWTH = {
   duration: 3.6,
@@ -229,7 +219,7 @@ export const GROWTH = {
   ],
 };
 
-/* ──────────────── Scene 8 — الوصول إلى بيتزرية 450 ──────────────── */
+/* ──────────────── Scene 7 — الوصول إلى بيتزرية 450 ──────────────── */
 
 export const REVEAL = {
   duration: 3,
@@ -281,14 +271,13 @@ export const TIMELINE = [
   { id: 'place', duration: PLACE.duration, overlap: 0.3 },
   { id: 'build', duration: BUILD.duration, overlap: 0.25 },
   { id: 'pizza', duration: PIZZA.duration, overlap: 0 },
-  { id: 'firstTable', duration: FIRST_TABLE.duration, overlap: 0 },
   { id: 'growth', duration: GROWTH.duration, overlap: 0.35 },
   { id: 'reveal', duration: REVEAL.duration, overlap: 0.1 },
   { id: 'finale', duration: FINALE.duration, overlap: 0.45 },
 ];
 
 /** Scenes drawn by the 3D world (the canvas is only rendered during these). */
-export const WORLD_SCENES = ['build', 'pizza', 'firstTable'];
+export const WORLD_SCENES = ['build', 'pizza'];
 
 /** Height of one "screen" of scrolling, as a fraction of the viewport height. */
 export const PACE = { desktop: 1, mobile: 0.9 };

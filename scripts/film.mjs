@@ -18,12 +18,14 @@
  * Pack «k» holds every 8th frame of the whole film: it loads first, so the
  * film can be scrubbed end to end almost at once; the other packs fill in the
  * frames in between (see src/components/ScrollFilm/ScrollFilm.jsx).
+ *
+ * Your own video instead of these clips: npm run film:video (film-video.mjs).
  */
 import { execFileSync, spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { ffmpeg, nightFilter } from './film-shared.mjs';
+import { ffmpeg, nightFilter, writeFilm } from './film-shared.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const SRC = path.join(ROOT, 'film');
@@ -32,8 +34,6 @@ const plan = JSON.parse(readFileSync(path.join(SRC, 'shots.json'), 'utf8'));
 
 const FPS = plan.local?.fps ?? 16; // Wan 2.2 renders at 16 fps
 const DISSOLVE = Math.max(0, Math.round((plan.dissolve ?? 0.375) * FPS)); // in frames
-const KEY_EVERY = 8; // pack «k»: every 8th frame
-const PACK = 48; // frames per pack after that
 const VARIANTS = {
   desktop: { width: 832, height: 624, quality: 72 },
   mobile: { width: 576, height: 432, quality: 64 },
@@ -121,51 +121,6 @@ const master = path.join(work, 'master.mkv');
   run([...clips.flatMap((c) => ['-i', c.path]), '-filter_complex', parts.join(';'), '-map', '[out]', '-an', '-c:v', 'ffv1', '-level', '3', master]);
 }
 
-// ── Frames → WebP → packs, per size ──────────────────────────────────
-rmSync(OUT, { recursive: true, force: true });
-const variants = {};
-let totalBytes = 0;
-for (const [name, v] of Object.entries(VARIANTS)) {
-  const dir = path.join(work, name);
-  mkdirSync(dir, { recursive: true });
-  run([
-    '-i', master, '-vf', `scale=${v.width}:${v.height}:flags=lanczos`,
-    '-c:v', 'libwebp', '-quality', String(v.quality), '-compression_level', '6', '-preset', 'photo',
-    '-start_number', '0', path.join(dir, '%04d.webp'),
-  ]);
-  const files = readdirSync(dir).filter((f) => f.endsWith('.webp')).sort();
-  if (files.length !== FRAMES) console.warn(`${name}: ${files.length} frames written, expected ${FRAMES}`);
-
-  const outDir = path.join(OUT, name);
-  mkdirSync(outDir, { recursive: true });
-  const groups = [{ id: 'k', frames: files.map((_, i) => i).filter((i) => i % KEY_EVERY === 0) }];
-  const rest = files.map((_, i) => i).filter((i) => i % KEY_EVERY !== 0);
-  for (let i = 0; i < rest.length; i += PACK) groups.push({ id: String(groups.length - 1).padStart(2, '0'), frames: rest.slice(i, i + PACK) });
-
-  const packs = groups.map((g) => {
-    const bufs = g.frames.map((i) => readFileSync(path.join(dir, files[i])));
-    const file = path.join(outDir, `${g.id}.bin`);
-    writeFileSync(file, Buffer.concat(bufs));
-    return { src: `/video/pizza-film/${name}/${g.id}.bin`, frames: g.frames, sizes: bufs.map((b) => b.length) };
-  });
-  copyFileSync(path.join(dir, files[0]), path.join(OUT, `${name}.webp`));
-  const bytes = packs.reduce((s, p) => s + p.sizes.reduce((a, b) => a + b, 0), 0);
-  totalBytes += bytes;
-  variants[name] = { width: v.width, height: v.height, poster: `/video/pizza-film/${name}.webp`, bytes, packs };
-  console.log(`${name.padEnd(8)} ${v.width}×${v.height}  ${(bytes / 1e6).toFixed(1)} MB in ${packs.length} packs`);
-}
+// ── Frames → WebP → packs, per size, and the manifest ─────────────────
+writeFilm({ root: ROOT, master, frames: FRAMES, fps: FPS, variants: VARIANTS, clips: timing });
 rmSync(work, { recursive: true, force: true });
-
-const manifest = {
-  kind: 'frames',
-  width: WIDTH,
-  height: HEIGHT,
-  fps: FPS,
-  frames: FRAMES,
-  duration: +(FRAMES / FPS).toFixed(4),
-  keyEvery: KEY_EVERY,
-  clips: timing,
-  variants,
-};
-writeFileSync(path.join(ROOT, 'src/data/pizza.film.json'), JSON.stringify(manifest) + '\n');
-console.log(`\n${FRAMES} frames, ${(FRAMES / FPS).toFixed(1)} s, ${(totalBytes / 1e6).toFixed(1)} MB in total → public/video/pizza-film/`);

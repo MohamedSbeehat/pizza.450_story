@@ -17,7 +17,11 @@ import './PizzaScene.css';
 /** Times below are in "screens" of scrolling; the scene lasts PIZZA.duration. */
 const S = (screens) => screens / PIZZA.duration;
 
-/** The film leaves the screen here (in screens), after the ending. */
+/**
+ * The logo and buttons leave here (in screens). The film itself stays on
+ * screen to the end, while the next chapter fades in over it, so the 3D
+ * never shows after it.
+ */
 const FILM_OUT = PIZZA.duration - 0.25;
 /** The ending: the finished pizza settles, then the logo and the buttons. */
 const END = PIZZA.duration - 1.7;
@@ -33,10 +37,10 @@ const BEATS_3D = [
 ];
 const BEATS_FILM = [
   [0.4, 2.1],
-  [2.5, 3.8],
-  [4.1, 5.4],
-  [5.7, 8.7],
-  [9.0, 10.15],
+  [2.5, 3.75],
+  [4.1, 5.15],
+  [5.55, 8.3],
+  [8.85, 10.15],
 ];
 
 /**
@@ -63,9 +67,9 @@ function stillOf(id) {
  *            and the peel pulls it out
  *   اللمسة   the real Pizzeria 450 pizza — then the logo and the buttons
  *
- * When the film exists (`npm run film`, see PIZZA.film), a real-looking film
- * of these steps is scrubbed by the scroll, with small labels pinned to the
- * ingredients. Without it — or if it cannot play — the same steps play in 3D
+ * When the film exists (see PIZZA.film) — your own video (`npm run film:video`)
+ * or the AI clips (`npm run film`) — it is scrubbed by the scroll, with
+ * small labels pinned to the ingredients. Without it — or if it cannot play — the same steps play in 3D
  * (the world underneath rests while the film covers it).
  */
 export function PizzaScene() {
@@ -101,7 +105,7 @@ export function PizzaScene() {
       const m = mk();
       if (!m) return;
       const local = ((t - m.start) / (m.end - m.start)) * PIZZA.duration; // screens
-      story.set({ worldCovered: filmReady && local > 0.35 && local < FILM_OUT });
+      story.set({ worldCovered: filmReady && local > 0.35 });
       if (local < 0 || local > PIZZA.duration) return;
       const r = film.current?.frameRect();
       if (!r) return;
@@ -180,7 +184,7 @@ export function PizzaScene() {
     shot(tl, 'heroOrbitB', S(10.8), S(0.6), 'sine.inOut');
     shot(tl, 'heroClose', S(11.35), S(0.4), 'power2.inOut');
 
-    // …and the lights come back on for the first table
+    // …and the lights come back on before the montage
     worldTo(tl, { mood: 0, blackout: 0, beams: 0 }, S(11.72), S(0.26), 'power1.inOut');
 
     // ── Words + checklist ────────────────────────────────────────
@@ -219,9 +223,8 @@ export function PizzaScene() {
         tl.to(b, { autoAlpha: 1, duration: S(0.03) }, S(t - 0.035));
         tl.to(b, { autoAlpha: 0, duration: S(0.5), ease: 'power1.inOut' }, S(t + 0.12));
       }
-      // the finished pizza settles: a slow push-in while the light goes down
-      tl.fromTo(filmWrap.current, { scale: 1 }, { scale: stills ? 1 : 1.06, duration: S(FILM_OUT - END), ease: 'sine.out' }, S(END));
-      fadeOut(tl, filmWrap.current, S(FILM_OUT), S(0.2));
+      // the finished pizza settles: a slow push-in to the end of the chapter
+      tl.fromTo(filmWrap.current, { scale: 1 }, { scale: stills ? 1 : 1.06, duration: S(PIZZA.duration - END), ease: 'sine.out' }, S(END));
     }
     fadeIn(tl, shade.current, S(END + 0.05), S(0.5), {}, { ease: 'power1.inOut' });
     fadeOut(tl, shade.current, S(FILM_OUT), S(0.2));
@@ -254,7 +257,8 @@ export function PizzaScene() {
     }
     fadeOut(tl, [e.logo, e.title, e.descriptor, e.line, e.actions].filter(Boolean), S(FILM_OUT - 0.05), S(0.2));
 
-    tl.to(root.current, { autoAlpha: 0, duration: 0.01 }, 0.99);
+    // gone only once the next chapter has faded in over it
+    tl.to(root.current, { autoAlpha: 0, duration: 0.004 }, 0.996);
   });
 
   return (

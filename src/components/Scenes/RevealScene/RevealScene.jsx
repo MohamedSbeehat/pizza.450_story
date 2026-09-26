@@ -8,7 +8,7 @@ import { letterbox } from '../../Effects/Letterbox';
 import './RevealScene.css';
 
 /**
- * Scene 8 — الوصول إلى بيتزرية 450
+ * Scene 7 — الوصول إلى بيتزرية 450
  * Everything stops for a beat in the dark. The frame widens to cinema scope.
  * Close on the sign, the lights of the facade switch on one by one, and the
  * camera slowly pulls back to show the whole place. Then the name.

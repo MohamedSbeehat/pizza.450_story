@@ -19,6 +19,9 @@ function pickVariant(film) {
  * fill in, so the film can be scrubbed almost at once and never waits). The
  * poster (first frame) holds the place until the first frame is drawn.
  *
+ * A film with `frame` (your own video, film/video.json) is shown whole and
+ * framed on the page instead of filling it (see ScrollFilm.css).
+ *
  * `stillsOnly` loads just the every-8th-frame pack (for reduced motion).
  * `onReady` is called once the first frame is on screen, `onFailed` when the
  * film cannot play — the scene then falls back to its 3D version.
@@ -38,7 +41,7 @@ export function ScrollFilm({ film, stillsOnly = false, onReady, onFailed, classN
         want.current = t;
         player.current?.seek(t, film.fps);
       },
-      /** Size of the film frame on screen (object-fit: cover) → for labels. */
+      /** Size of the film frame on screen (object-fit: cover, or framed) → for labels. */
       frameRect() {
         const c = canvas.current;
         if (!c) return null;
@@ -78,8 +81,13 @@ export function ScrollFilm({ film, stillsOnly = false, onReady, onFailed, classN
 
   return (
     <div
-      className={`scroll-film${ready ? ' is-ready' : ''} ${className}`}
-      style={{ '--film-aspect': `${film.width} / ${film.height}` }}
+      className={`scroll-film${film.frame ? ' is-framed' : ''}${ready ? ' is-ready' : ''} ${className}`}
+      style={{
+        '--film-aspect': `${film.width} / ${film.height}`,
+        '--film-ar': film.width / film.height,
+        '--film-zoom': film.frame?.zoom,
+        '--film-portrait': film.frame?.portrait,
+      }}
       aria-hidden="true"
     >
       <img className="scroll-film__poster" src={variant.poster} alt="" decoding="async" />
