@@ -247,7 +247,7 @@ function Shelves() {
   useFrame(() => {
     const p = phase('furniture');
     rise(group.current, seg(p, 0, 0.5), 3.6);
-    const on = world.lights;
+    const on = world.lights * (1 - world.blackout);
     leds.current.forEach((m) => m && (m.emissiveIntensity = on * 2.2));
   });
 
@@ -448,7 +448,9 @@ function Pendants() {
       // switch-on: each lamp flickers to life
       const on = seg(world.lights, i * 0.08, i * 0.08 + 0.35);
       const buzz = on > 0 && on < 1 ? (Math.sin(time * 45 + i * 7) > -0.2 ? 1 : 0.25) : 1;
-      const level = on * buzz * flicker(time, i) * 1.08;
+      // «the lights go out»: every lamp dies, the last ones a moment later
+      const off = seg(world.blackout, i * 0.05, i * 0.05 + 0.6);
+      const level = on * (1 - off) * buzz * flicker(time, i) * 1.08;
       if (bulbs.current[i]) bulbs.current[i].emissiveIntensity = 0.2 + level * 5;
       if (glows.current[i]) glows.current[i].opacity = level * 0.55;
     });

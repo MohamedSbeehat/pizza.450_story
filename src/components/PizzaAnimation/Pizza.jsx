@@ -29,8 +29,8 @@ import {
 import { baseGeometry, cheeseGeometry, strandGeometry, leafGeometry } from './pizzaGeometry';
 
 /*
- * The first pizza, made in front of the viewer like a food film (Scene 5),
- * then served (Scene 6). The choreography lives in three/pizzaPlan.js.
+ * The first pizza, made in front of the viewer like a food film (Scene 5).
+ * The choreography lives in three/pizzaPlan.js.
  *
  *   dough   a ball → pressed with the fingers (dents) → stretched and turned
  *   sauce   spreads in a spiral behind the ladle (Ingredients.jsx)

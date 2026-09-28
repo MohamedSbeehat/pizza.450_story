@@ -1,4 +1,4 @@
-import { SHOW_PLACEHOLDERS, INTRO, SUNRISE, PEOPLE, PLACE, BUILD, PIZZA, FIRST_TABLE, GROWTH, REVEAL, FINALE, LINKS } from '../../data/story';
+import { SHOW_PLACEHOLDERS, INTRO, SUNRISE, PEOPLE, PLACE, BUILD, PIZZA, GROWTH, REVEAL, FINALE, LINKS } from '../../data/story';
 import { isPlaceholder } from '../StoryText/StoryText';
 
 const clean = (s) => String(s).replace(/\*/g, '');
@@ -17,7 +17,6 @@ export function Transcript() {
     PLACE.lines,
     BUILD.lines,
     PIZZA.steps.map((s) => s.text),
-    [...FIRST_TABLE.lines, FIRST_TABLE.slate?.label, ...(FIRST_TABLE.promise || [])],
     GROWTH.frames.map((f) => `${f.label}: ${f.story || ''}`),
     [REVEAL.title, ...REVEAL.lines],
     [...FINALE.lines, FINALE.title, FINALE.teaser?.title, FINALE.teaser?.text, FINALE.footer],

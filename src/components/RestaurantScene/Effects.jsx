@@ -19,9 +19,17 @@ import { world } from '../../three/worldState';
  */
 export function Effects() {
   const dof = useRef(null);
+  const bloom = useRef(null);
   const tier = QUALITY.tier;
 
   useFrame(({ camera }) => {
+    // in the dark, golden part of the pizza chapter the highlights glow more
+    const b = bloom.current;
+    if (b) {
+      const gold = Math.max(world.mood * 0.6, world.beams);
+      b.intensity = 0.55 + 0.4 * gold;
+      b.luminanceMaterial.threshold = 0.92 - 0.2 * gold;
+    }
     const effect = dof.current;
     if (!effect) return;
     const c = world.cam;
@@ -35,7 +43,7 @@ export function Effects() {
   return (
     <EffectComposer multisampling={0} enableNormalPass={false}>
       <N8AO halfRes aoRadius={0.45} distanceFalloff={0.6} intensity={2.4} color="#1a0f08" quality={tier === 'high' ? 'medium' : 'performance'} />
-      <Bloom mipmapBlur intensity={0.55} luminanceThreshold={0.92} luminanceSmoothing={0.2} radius={0.7} />
+      <Bloom ref={bloom} mipmapBlur intensity={0.55} luminanceThreshold={0.92} luminanceSmoothing={0.2} radius={0.7} />
       {tier === 'high' ? <DepthOfField ref={dof} target={[0, 0, 0]} focalLength={0.02} bokehScale={2.2} worldFocusRange={2} /> : null}
       <ToneMapping mode={ToneMappingMode.NEUTRAL} />
       <SMAA />

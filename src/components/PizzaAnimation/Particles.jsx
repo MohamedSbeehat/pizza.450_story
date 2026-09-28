@@ -44,7 +44,7 @@ export function Particles() {
     embers.mat.uniforms.uAmount.value = Math.max(0, world.fire - 0.2) * 1.25;
 
     dust.mat.uniforms.uTime.value = t;
-    dust.mat.uniforms.uAmount.value = world.lights;
+    dust.mat.uniforms.uAmount.value = world.lights * (1 - 0.6 * world.mood) * (1 - world.blackout);
   });
 
   return (

@@ -1,0 +1,18 @@
+{
+  "source": "video/pizza-video-no-watermark.mp4",
+  "fps": 24,
+  "cuts": {
+    "dough": 0,
+    "stretch": 1.083,
+    "sauce": 3.083,
+    "cheese": 3.917,
+    "oven": 4.708,
+    "bake": 5.958,
+    "finish": 7.75
+  },
+  "sizes": {
+    "desktop": { "width": 1080, "quality": 72 },
+    "mobile": { "width": 600, "quality": 62 }
+  },
+  "frame": { "zoom": 1.15, "portrait": 1.18 }
+}

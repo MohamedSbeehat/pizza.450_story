@@ -7,6 +7,7 @@ import { useStory } from '../../story/store';
 import { SHOTS } from '../../three/worldState';
 import { CameraRig } from './CameraRig';
 import { Lighting } from './Lighting';
+import { Beams } from './Beams';
 import { Restaurant } from './Restaurant';
 import { Oven } from './Oven';
 import { Pizza } from '../PizzaAnimation/Pizza';
@@ -42,7 +43,7 @@ function Warmup() {
  * The canvas only renders while its scenes are on screen.
  */
 export default function World() {
-  const visible = useStory((s) => s.worldVisible);
+  const visible = useStory((s) => s.worldVisible && !s.worldCovered);
   const [dpr, setDpr] = useState(QUALITY.dpr[1]);
   const start = SHOTS.buildStart;
 
@@ -81,6 +82,7 @@ export default function World() {
       </Environment>
 
       <Lighting />
+      <Beams />
       <Restaurant />
       <Oven />
       <Pizza />

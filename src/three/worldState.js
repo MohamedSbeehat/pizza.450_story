@@ -65,6 +65,12 @@ export const world = {
   finish: 0, // cheese is grated on top, fresh basil falls
   steam: 0,
   serve: 0, // serving board → first table
+
+  /** The pizza chapter's light, like a food commercial (all 0→1). */
+  mood: 0, // the kitchen sinks into a dark, warm atmosphere; a golden spot on the counter
+  blackout: 0, // «the lights go out»: only the oven fire (and the golden light) remain
+  beams: 0, // golden beams from above and the sides onto the serving board
+  sweep: 0, // the hero spotlight travels slowly across the finished pizza
 };
 
 /** When each part of the restaurant is built, on the `world.build` 0→1 clock. */
@@ -81,7 +87,6 @@ export const WORLD_INITIAL = JSON.parse(JSON.stringify(world));
 
 const [px, py, pz] = LAYOUT.prep;
 const [sx, sy, sz] = LAYOUT.serve;
-const T = LAYOUT.tables.find((t) => t.first);
 const O = LAYOUT.oven;
 const [bx, bz] = PIZZA_SET.bowl;
 const [mx, mz] = PIZZA_SET.mozzarella;
@@ -110,8 +115,10 @@ export const SHOTS = {
   ovenMouth: { x: O.x + 0.02, y: O.deckY + 0.16, z: O.z + 1.55, tx: O.x, ty: O.deckY + 0.03, tz: O.z + 0.1, fov: 38 },
   finishTop: { x: sx + 0.28, y: sy + 0.36, z: sz + 0.42, tx: sx, ty: sy + 0.07, tz: sz - 0.02, fov: 36 },
   pizzaHero: { x: sx + 0.12, y: sy + 0.6, z: sz + 0.6, tx: sx, ty: sy + 0.02, tz: sz, fov: 34 },
-
-  // Scene 6 — the first table
-  tableClose: { x: T.x + 1.0, y: 1.42, z: T.z + 1.25, tx: T.x, ty: LAYOUT.tableTop + 0.04, tz: T.z, fov: 36 },
-  roomWide: { x: -4.6, y: 3.3, z: 8.4, tx: 0.6, ty: 1.2, tz: -1.2, fov: 40 },
+  // «the lights go out»: far enough back to see the dark kitchen around the oven fire
+  ovenDark: { x: O.x - 1.9, y: 1.35, z: O.z + 3.2, tx: O.x - 0.9, ty: 1.0, tz: O.z + 0.1, fov: 42 },
+  // the hero: a slow orbit around the finished pizza in the golden light, then a close-up
+  heroOrbitA: { x: sx - 0.55, y: sy + 0.42, z: sz + 0.5, tx: sx, ty: sy + 0.03, tz: sz, fov: 34 },
+  heroOrbitB: { x: sx + 0.62, y: sy + 0.36, z: sz + 0.38, tx: sx, ty: sy + 0.03, tz: sz, fov: 34 },
+  heroClose: { x: sx + 0.2, y: sy + 0.2, z: sz + 0.26, tx: sx - 0.02, ty: sy + 0.03, tz: sz - 0.02, fov: 32 },
 };

@@ -77,7 +77,7 @@ export const flourMaterial = () =>
         vAlpha = alive * mix(mix(0.85, 0.55, smoothstep(0.8, 1.0, t)), 0.07 * (1.0 - smoothstep(0.55, 1.0, t)), puff);
       }
     `,
-    fragmentShader: SOFT_FRAG('vec3(0.95, 0.93, 0.88)'),
+    fragmentShader: SOFT_FRAG('vec3(1.0, 0.88, 0.66)'), // flour in the golden light
   });
 
 /** Steam rising from the hot pizza (loops on time). */
@@ -103,7 +103,7 @@ export const steamMaterial = () =>
         vAlpha = uAmount * sin(life * 3.14159) * 0.15;
       }
     `,
-    fragmentShader: SOFT_FRAG('vec3(1.0, 0.97, 0.92)'),
+    fragmentShader: SOFT_FRAG('vec3(1.0, 0.9, 0.72)'), // steam lit in gold
   });
 
 /** Embers flying out of the oven mouth (additive, loops on time). */
