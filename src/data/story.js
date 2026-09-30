@@ -30,9 +30,8 @@ export const BRAND = {
 };
 
 /**
- * Final buttons. A button whose href is '#' is shown with a small «قريبًا»
- * (coming soon) tag and does not navigate — replace '#' with the real link
- * when it exists.
+ * Final buttons. Links without a real href stay hidden until configured.
+ * Replace '#' with the menu or contact link when it exists.
  */
 export const LINKS = {
   menu: { label: 'اكتشف القائمة', href: '#' },
@@ -97,33 +96,55 @@ export const PEOPLE = {
 /* ─────────────────────── Scene 3 — المكان ─────────────────────── */
 
 export const PLACE = {
-  duration: 3.6,
+  duration: 4.8,
   slate: { label: 'المكان', value: 'جنين · شارع حيفا' },
-  lines: ['مكان صغير...', 'وحلم *أكبر*.'],
-  // The picture morphs through these stages in order: drawn → coloured → real.
-  // Put an old photo of the place first if you have one.
-  stages: [
-    { kind: 'sketch', caption: 'الفكرة', image: { src: '/images/story/facade-sketch' } },
-    { kind: 'vision', caption: 'التصميم', image: { src: '/images/story/facade-vision' } },
-    { kind: 'real', caption: 'الواقع', image: { src: '/images/story/facade-day', position: '50% 38%' } },
+  // The real clips prepared by `npm run place:video`, in walking order.
+  shots: [
+    {
+      id: 'terrace', no: '01', label: 'الجلسة الخارجية', format: 'portrait',
+      title: 'قبل أن تدخل…\n*تبدأ الحكاية.*',
+      text: 'على رصيف شارع حيفا، تمتدّ طاولاتنا تحت المظلّة، بين خضرة النباتات ونقوش البلاط. اسحب كرسيًّا، وخذ وقتك… هنا، للقعدة طعمها.',
+      details: ['جلسة على الرصيف', 'بلاط بنقوش دافئة', 'خضرة تحيط بالطاولات'],
+      caption: 'أول الحكاية… قعدة في الهواء الطلق.',
+      alt: 'الجلسة الخارجية: طاولات وكراسٍ خضراء تحت المظلّة، ونباتات وأرضية مزخرفة',
+      from: 0.15, to: 5.8,
+    },
+    {
+      id: 'olive', no: '02', label: 'الواجهة والزيتون', format: 'portrait',
+      title: 'زيتونة عند الباب،\n*وضوء يدعوك.*',
+      text: 'أغصان الزيتون تلامس الواجهة، وخلف الشبابيك السوداء يطلّ ضوء دافئ. بين الطوب الأبيض وأوراق الشجر، تظهر ملامح بيتزرية 450… ويصير فضولك خطوة إلى الداخل.',
+      details: ['أغصان الزيتون', 'شبابيك بإطارات سوداء', 'ضوء خلف الزجاج'],
+      caption: 'تفاصيل صغيرة، تستقبلك قبل الباب.',
+      alt: 'شجرة الزيتون أمام الواجهة البيضاء والشبابيك السوداء، مع الإضاءة الدافئة في الداخل',
+      from: 0.1, to: 5.8,
+    },
   ],
-  // At the end the camera flies into this point of the last picture (in %)
-  // and comes out inside the 3D restaurant.
-  enter: { x: 24, y: 64 },
 };
 
-/* ─────────────────── Scene 4 — تجهيز المطعم (3D) ─────────────────── */
+/* ─────────────────── Scene 4 — داخل المكان ─────────────────── */
 
 export const BUILD = {
-  duration: 4,
-  lines: ['كل تفصيل كان خطوة.', 'وكل خطوة كانت تقرّب *الحلم*.'],
-  // Small labels that follow what is being built.
-  steps: ['الأرضية', 'الجدران', 'الفرن', 'الطاولات', 'الإضاءة'],
-  // Real photos that float in while the 3D place is being built.
-  // `at` = when it appears (0 = scene start, 1 = scene end); `note` = small line under it.
-  memories: [
-    { at: 0.22, caption: 'تجهيز الواجهة', note: 'لمسةً بعد لمسة', image: { src: '/images/story/facade-sign' } },
-    { at: 0.46, caption: 'تركيب الفرن', note: '15 سبتمبر', image: { src: '/images/story/oven-install', position: '50% 30%' } },
+  duration: 5.2,
+  slate: { label: 'داخل المكان', value: 'من الباب إلى قلب الحكاية' },
+  shots: [
+    {
+      id: 'interior', no: '03', label: 'الطاولات والضوء', format: 'landscape',
+      title: 'ادخل…\n*وخلّي القعدة تطول.*',
+      text: 'طاولات خشبية، مقاعد خضراء، وأقواس مضيئة بين جدران الطوب الأبيض. فوقها تتدلّى مصابيح بلون العسل، وتترك لكل زاوية دفئها. اختَر طاولتك… أحلى الحكي بيبدأ حولها.',
+      details: ['دفء الخشب', 'أقواس مضيئة', 'مصابيح بلون العسل'],
+      caption: 'من أول خطوة، يصير للمكان إحساس أقرب.',
+      alt: 'داخل المطعم مع الطاولات الخشبية والمقاعد الخضراء والأقواس المضيئة والمصابيح المعلّقة',
+      from: 0.1, to: 5.8,
+    },
+    {
+      id: 'oven', no: '04', label: 'الفرن النحاسي', format: 'landscape',
+      title: 'وفي قلب المكان…\n*دفء النار.*',
+      text: 'خلف الكاونتر الخشبي، يلمع الفرن النحاسي وتتحرّك النار في داخله. هنا تلتقي حكاية المكان بحكاية البيتزا: عجين، ويد تصنعه، ولهب يمنحه اللمسة الأخيرة.',
+      details: ['قبة من النحاس', 'كاونتر خشبي', 'لهب في قلب الفرن'],
+      caption: 'ومن هنا… تبدأ حكاية أول بيتزا.',
+      alt: 'لقطة تقترب من الفرن النحاسي خلف الكاونتر الخشبي حتى تظهر النار داخل الفرن',
+      from: 0.1, to: 6.8,
+    },
   ],
 };
 
@@ -189,7 +210,7 @@ export const PIZZA = {
   // first real one is the highlighted button (so once LINKS.contact gets a
   // WhatsApp link, it leads).
   ending: {
-    line: 'بيتزا نابوليتانية من فرن الحطب... *قريبًا* بين يديك.',
+    line: 'من فرن الحطب لطاولتكم… *صحتين وعافية!*',
     buttons: ['contact', 'instagram', 'location'],
   },
 };
@@ -214,7 +235,7 @@ export const GROWTH = {
       ],
     },
     { label: 'المطبخ', story: 'فرنٌ نحاسي... قلبُ المكان.', image: { src: '/images/story/oven-copper', position: '50% 70%' } },
-    { label: 'واجهة المطعم', story: 'واجهةٌ تنتظر ضيوفها.', image: { src: '/images/story/facade-day', position: '50% 40%' } },
+    { label: 'واجهة المطعم', story: 'بابنا مفتوح… واللّمة بتحلى فيكم.', image: { src: '/images/story/facade-day', position: '50% 40%' } },
     { label: 'الهوية', story: '450 درجة من الشغف.', image: { src: '/images/brand/logo', fit: 'contain' } },
   ],
 };
@@ -223,7 +244,7 @@ export const GROWTH = {
 
 export const REVEAL = {
   duration: 3,
-  slate: { label: 'قريبًا', value: 'ترقبوا الافتتاح' },
+  slate: { label: 'افتتحنا', value: 'أهلًا وسهلًا فيكم' },
   image: { src: '/images/story/facade-night' },
   // Where the camera starts (close on the sign), in % of the image.
   focus: { x: 53, y: 27 },
@@ -239,7 +260,7 @@ export const REVEAL = {
     { x: 36, y: 78, s: 40, soft: true }, // planters
   ],
   title: 'بيتزرية 450',
-  lines: ['من فكرة صغيرة...', 'إلى قصة *تُروى*.'],
+  lines: ['الحلم صار حقيقة…', 'والحكاية بتحلى *فيكم*.'],
 };
 
 /* ─────────────────────────── النهاية ─────────────────────────── */
@@ -247,16 +268,16 @@ export const REVEAL = {
 export const FINALE = {
   duration: 3.2,
   image: { src: '/images/story/facade-day', position: '50% 40%' },
-  lines: ['وهذه ليست النهاية...', 'هذه مجرد بداية *جديدة*.'],
+  lines: ['فتحنا أبوابنا…', 'وهلّأ دوركم تكونوا جزء من *الحكاية*.'],
   title: 'بيتزرية 450',
-  // The shop has not opened yet: build anticipation.
+  // The restaurant is open: welcome guests into the story.
   teaser: {
-    badge: 'قريبًا',
-    title: 'ترقبوا *الافتتاح*',
-    text: 'الطاولات تنتظر... والنار على وشك أن تشتعل.',
+    badge: 'افتتحنا',
+    title: 'أهلًا وسهلًا فيكم في *بيتزرية 450*',
+    text: 'الفرن دافي، والبيتزا من القلب… تعالوا شاركونا القعدة واللّمة الحلوة.',
   },
   buttons: ['menu', 'contact', 'location', 'instagram'],
-  primary: 'instagram', // the highlighted button
+  primary: 'location', // invite guests to visit the restaurant
   footer: 'جنين · شارع حيفا · بجانب بنك فلسطين',
 };
 
@@ -277,7 +298,7 @@ export const TIMELINE = [
 ];
 
 /** Scenes drawn by the 3D world (the canvas is only rendered during these). */
-export const WORLD_SCENES = ['build', 'pizza'];
+export const WORLD_SCENES = ['pizza'];
 
 /** Height of one "screen" of scrolling, as a fraction of the viewport height. */
 export const PACE = { desktop: 1, mobile: 0.9 };

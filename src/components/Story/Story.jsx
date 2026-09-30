@@ -22,7 +22,7 @@ import { Transcript } from './Transcript';
 import './Story.css';
 
 // The 3D world (three.js + react-three-fiber) is a separate chunk, loaded
-// only once the viewer is watching the story (see `worldArmed` in StoryProvider).
+// near the pizza chapter for its fallback (see `worldArmed` in StoryProvider).
 const World = lazy(() => import('../RestaurantScene/World'));
 
 /** Scene id (from TIMELINE in data/story.js) → component. */

@@ -10,6 +10,7 @@
     "preview": "vite preview --host 0.0.0.0",
     "images": "node scripts/optimize-images.mjs",
     "shots": "node scripts/shots.mjs",
+    "place:video": "node scripts/place-video.mjs",
     "film": "node scripts/film.mjs",
     "film:video": "node scripts/film-video.mjs",
     "film:generate": "node scripts/film-generate.mjs",

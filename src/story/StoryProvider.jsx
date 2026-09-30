@@ -76,8 +76,8 @@ export function StoryProvider({ children }) {
       const chapterStarts = CHAPTERS.map((c) => marks[c.scene]?.start ?? Infinity);
       const worldFrom = marks[WORLD_SCENES[0]].start - 0.05;
       const worldTo = marks[WORLD_SCENES[WORLD_SCENES.length - 1]].end + 0.05;
-      // Load the 3D chunk while the viewer is still watching the sunrise.
-      const armWorldAt = (marks.sunrise?.start ?? 0) + 0.5;
+      // The place is real footage; only prewarm 3D near the pizza fallback.
+      const armWorldAt = worldFrom - 0.75;
 
       const onUpdate = () => {
         const t = master.time();

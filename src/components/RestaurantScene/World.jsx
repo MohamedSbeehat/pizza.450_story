@@ -20,7 +20,7 @@ import { SafeBoundary } from './SafeBoundary';
 /**
  * Renders one frame as soon as the world is mounted — while it is still
  * hidden — so shaders compile and textures upload before the viewer
- * reaches Scene 4 (no hitch when the 3D appears).
+ * reaches the pizza chapter (no hitch if the 3D fallback appears).
  */
 function Warmup() {
   const gl = useThree((s) => s.gl);
@@ -38,7 +38,7 @@ function Warmup() {
 }
 
 /**
- * The 3D restaurant (Scenes 4–6). Everything in it is driven by the numbers
+ * The pizza chapter's 3D fallback. Everything in it is driven by the numbers
  * in three/worldState.js, which the scroll timeline tweens.
  * The canvas only renders while its scenes are on screen.
  */

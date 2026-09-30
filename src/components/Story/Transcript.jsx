@@ -14,8 +14,7 @@ export function Transcript() {
     SUNRISE.lines,
     [...PEOPLE.first, ...PEOPLE.second, PEOPLE.note],
     PEOPLE.people.map((p) => `${p.name}: ${p.role}`),
-    PLACE.lines,
-    BUILD.lines,
+    ...[...PLACE.shots, ...BUILD.shots].map((shot) => [shot.label, shot.title, shot.text, ...shot.details]),
     PIZZA.steps.map((s) => s.text),
     GROWTH.frames.map((f) => `${f.label}: ${f.story || ''}`),
     [REVEAL.title, ...REVEAL.lines],
@@ -28,7 +27,7 @@ export function Transcript() {
         <p key={i}>{lines.filter(keep).map(clean).join(' ')}</p>
       ))}
       <ul>
-        {Object.values(LINKS).map((l) => (
+        {Object.values(LINKS).filter((l) => l.href && l.href !== '#').map((l) => (
           <li key={l.label}>
             <a href={l.href}>{l.label}</a>
           </li>

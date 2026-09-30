@@ -124,6 +124,8 @@ export function PizzaScene() {
 
   useSceneTimeline((tl) => {
     fadeIn(tl, root.current, 0, 0.02);
+    // The filmed restaurant tour no longer builds the fallback world.
+    worldTo(tl, { build: 1, lights: 1, fire: 0.3, blueprint: 0 }, 0, 0);
 
     // ── The light: a dark kitchen, a golden pool on the counter ───
     // (like a food commercial; it grows warmer as the pizza nears the fire)

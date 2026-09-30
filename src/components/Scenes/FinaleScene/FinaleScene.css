@@ -106,7 +106,7 @@
   visibility: hidden;
 }
 
-/* ── Coming soon: the suspense ─────────────────── */
+/* ── Welcome to the restaurant ─────────────────── */
 .finale__teaser {
   display: flex;
   flex-direction: column;
@@ -135,7 +135,7 @@
   border-radius: 50%;
   background: var(--amber);
 }
-/* a slow heartbeat: something is about to happen */
+/* A gentle pulse around the opening badge. */
 .finale__badge i::after {
   content: '';
   position: absolute;
@@ -152,7 +152,7 @@
   margin: 0;
   line-height: 1.2;
 }
-/* light keeps passing over "الافتتاح" */
+/* Warm light passes over the restaurant name. */
 .finale__teaser-title .acc {
   background: linear-gradient(100deg, #eb9a45 0%, #f8d58f 35%, #fff4dc 50%, #f8d58f 65%, #eb9a45 100%);
   background-size: 250% 100%;
@@ -221,27 +221,6 @@
 }
 .finale__btn.is-primary:hover {
   background: linear-gradient(135deg, #f7bd70, #e2843a);
-}
-.finale__btn.is-soon {
-  cursor: default;
-  color: var(--cream-2);
-  border-style: dashed;
-  border-color: rgba(241, 230, 208, 0.22);
-}
-.finale__btn.is-soon:hover {
-  border-color: rgba(241, 230, 208, 0.22);
-  background: rgba(11, 9, 7, 0.4);
-}
-.finale__btn.is-soon:active {
-  transform: none;
-}
-.finale__btn em {
-  font-style: normal;
-  font-size: 0.72rem;
-  padding: 0.1rem 0.45rem;
-  border-radius: 999px;
-  color: var(--amber);
-  background: rgba(232, 137, 43, 0.12);
 }
 .finale__btn svg {
   width: 18px;

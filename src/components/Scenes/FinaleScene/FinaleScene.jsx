@@ -59,7 +59,7 @@ export function FinaleScene() {
     textIn(tl, title.current, 0.55, { dur: 0.1, stagger: 0.04, y: 34 });
     fadeIn(tl, descriptor.current, 0.6, 0.08, { y: 10 }, { y: 0 });
 
-    // the suspense: coming soon
+    // The restaurant is open: reveal the invitation to visit.
     fadeIn(tl, badge.current, 0.66, 0.06, { scale: 0.8 }, { scale: 1, ease: 'back.out(2)' });
     textIn(tl, teaser.current, 0.69, { dur: 0.09, stagger: 0.04, y: 26, blur: 16 });
     textIn(tl, teaserText.current, 0.76, { dur: 0.08, stagger: 0.012, y: 12, blur: 8 });
@@ -111,23 +111,13 @@ export function FinaleScene() {
           <nav ref={actions} className="finale__actions" aria-label="روابط بيتزرية 450">
             {FINALE.buttons.map((key) => {
               const link = LINKS[key];
-              if (!link) return null;
+              if (!link?.href || link.href === '#') return null;
               const icon = (
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   {ICONS[key]}
                 </svg>
               );
               const label = <span className={key === 'instagram' ? 'latin' : undefined}>{link.label}</span>;
-              // no link yet → "coming soon", not a dead link
-              if (!link.href || link.href === '#') {
-                return (
-                  <span key={key} className="finale__btn is-soon" aria-disabled="true">
-                    {icon}
-                    {label}
-                    <em>قريبًا</em>
-                  </span>
-                );
-              }
               const external = /^https?:/.test(link.href);
               return (
                 <a
